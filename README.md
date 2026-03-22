@@ -1,6 +1,6 @@
 # E-Mail Spam-Filter mit Claude AI
 
-Filtert automatisch Spam-E-Mails und benachrichtigt dich bei wichtigen Nachrichten.
+Filtert automatisch Spam aus **tim.baer@icloud.com** und **timbaer05@gmail.com** und benachrichtigt bei wichtigen Nachrichten.
 
 ## Setup
 
@@ -12,7 +12,7 @@ pip install -r requirements.txt
 **2. Konfiguration:**
 ```bash
 cp .env.example .env
-# .env mit deinen Daten befüllen
+# .env mit deinen Passwörtern befüllen
 ```
 
 **3. Starten:**
@@ -20,39 +20,52 @@ cp .env.example .env
 python email_filter.py
 ```
 
-## .env Konfiguration
+---
 
-| Variable | Beschreibung |
-|---|---|
-| `ANTHROPIC_API_KEY` | Dein Anthropic API Key |
-| `EMAIL_ADDRESS` | Deine E-Mail-Adresse |
-| `EMAIL_PASSWORD` | App-Passwort (nicht dein normales Passwort!) |
-| `IMAP_SERVER` | IMAP Server (z.B. `imap.gmail.com`) |
-| `SMTP_SERVER` | SMTP Server (z.B. `smtp.gmail.com`) |
-| `NOTIFY_EMAIL` | Wohin Benachrichtigungen gesendet werden |
-| `BATCH_SIZE` | Wie viele E-Mails auf einmal geprüft werden (Standard: 20) |
+## App-Passwörter erstellen (kein normales Passwort verwenden!)
 
-## Gmail App-Passwort erstellen
+### iCloud (tim.baer@icloud.com)
+1. → [appleid.apple.com](https://appleid.apple.com)
+2. Anmeldung & Sicherheit → App-spezifische Passwörter
+3. „+" klicken → Name z.B. „Email Filter"
+4. Das Passwort (`xxxx-xxxx-xxxx-xxxx`) in `.env` als `ICLOUD_PASSWORD` eintragen
 
-1. Google Konto → Sicherheit → 2-Faktor-Authentifizierung aktivieren
-2. Sicherheit → App-Passwörter → "Mail" + "Windows-Computer" auswählen
-3. Das generierte Passwort in `.env` als `EMAIL_PASSWORD` eintragen
+### Gmail (timbaer05@gmail.com)
+1. → [myaccount.google.com](https://myaccount.google.com) → Sicherheit
+2. 2-Faktor-Authentifizierung aktivieren (falls noch nicht)
+3. Sicherheit → App-Passwörter → „Mail" auswählen
+4. Das Passwort (`xxxx xxxx xxxx xxxx`) in `.env` als `GMAIL_PASSWORD` eintragen
+
+---
 
 ## Wie es funktioniert
 
-1. Verbindet sich per IMAP mit deinem Posteingang
-2. Lädt ungelesene E-Mails (max. `BATCH_SIZE`)
-3. Claude AI klassifiziert alle E-Mails auf einmal:
-   - **🗑️ Spam**: Wird in den Spam-Ordner verschoben
-   - **📄 Normal**: Wird als gelesen markiert
-   - **⭐ Wichtig**: Bleibt ungelesen + du bekommst eine Benachrichtigung
-4. Sendet eine Zusammenfassungs-E-Mail für wichtige Nachrichten
+Das Programm prüft **beide Konten nacheinander**:
+
+1. Verbindet sich per IMAP mit iCloud und Gmail
+2. Lädt ungelesene E-Mails (max. `BATCH_SIZE` pro Konto)
+3. Claude AI klassifiziert alle E-Mails:
+   - **🗑️ Spam** → wird in den Spam-Ordner verschoben
+   - **📄 Normal** → wird als gelesen markiert
+   - **⭐ Wichtig** → bleibt ungelesen + du bekommst eine Benachrichtigung
+4. Sendet eine Zusammenfassungs-E-Mail an `NOTIFY_EMAIL` für wichtige Nachrichten
+
+---
 
 ## Automatisch ausführen (Cron Job)
 
-Jede Stunde automatisch ausführen:
+Jede Stunde automatisch laufen lassen:
 ```bash
 crontab -e
-# Folgendes hinzufügen:
+# Folgendes einfügen (Pfad anpassen!):
 0 * * * * cd /pfad/zum/projekt && python email_filter.py >> filter.log 2>&1
 ```
+
+---
+
+## Server-Einstellungen (bereits eingebaut)
+
+| Anbieter | IMAP Server | SMTP Server |
+|---|---|---|
+| iCloud | `imap.mail.me.com` | `smtp.mail.me.com` |
+| Gmail | `imap.gmail.com` | `smtp.gmail.com` |
