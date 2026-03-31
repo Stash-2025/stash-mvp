@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}{{ beleg.haendler or 'Beleg' }}{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div class="back-row">
+    <a href="{{ url_for('belege_liste') }}" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Alle Belege
+    </a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-current">{{ beleg.haendler or 'Beleg #' + beleg.id | string }}</span>
+  </div>
+</div>
+
+<div class="detail-grid">
+
+  <!-- ── Hauptkarte ──────────────────────────────────────────── -->
+  <div class="card detail-main">
+
+    <!-- Kopfzeile -->
+    <div class="detail-header">
+      <div class="detail-haendler-block">
+        <span class="detail-quelle-icon">{{ beleg.quelle | quelle_icon }}</span>
+        <div>
+          <h2 class="detail-haendler">{{ beleg.haendler or 'Unbekannter Händler' }}</h2>
+          {% if beleg.beleg_typ %}
+            <span class="tag tag-sm">{{ beleg.beleg_typ }}</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="detail-betrag-block">
+        {% if beleg.gesamtbetrag %}
+          <div class="detail-betrag">{{ beleg.gesamtbetrag | betrag(beleg.waehrung or 'EUR') }}</div>
+          <div class="detail-betrag-label">Gesamtbetrag</div>
+        {% else %}
+          <div class="detail-betrag dim">–</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Felder -->
+    <div class="detail-fields">
+      <div class="detail-field">
+        <span class="field-label">📅 Datum</span>
+        <span class="field-value">{{ beleg.datum | datum_de }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">🏷️ Kategorie</span>
+        <span class="field-value">
+          {% if beleg.kategorie %}
+            <span class="tag">{{ beleg.kategorie }}</span>
+          {% else %}–{% endif %}
+        </span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">💳 Zahlungsart</span>
+        <span class="field-value">{{ beleg.zahlungsart or '–' }}</span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">📊 MwSt.</span>
+        <span class="field-value">
+          {{ beleg.mwst | betrag(beleg.waehrung or 'EUR') if beleg.mwst else '–' }}
+        </span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">📂 Quelle</span>
+        <span class="field-value">
+          {{ beleg.quelle | quelle_icon }} {{ beleg.quelle | capitalize }}
+        </span>
+      </div>
+      <div class="detail-field">
+        <span class="field-label">🕒 Gespeichert</span>
+        <span class="field-value">{{ beleg.erstellt_am[:16] | replace('T', ' ') if beleg.erstellt_am else '–' }}</span>
+      </div>
+    </div>
+
+    {% if beleg.notizen %}
+    <div class="detail-notizen">
+      <span class="field-label">📝 Notizen</span>
+      <p>{{ beleg.notizen }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Artikel-Liste ───────────────────────────────────────── -->
+  {% if beleg.artikel_list and beleg.artikel_list | length > 0 %}
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Artikel</h2>
+      <span class="card-badge">{{ beleg.artikel_list | length }} Position{{ 'en' if beleg.artikel_list | length != 1 else '' }}</span>
+    </div>
+    <div class="card-body no-padding">
+      <table class="table table-full">
+        <thead>
+          <tr>
+            <th>Bezeichnung</th>
+            <th class="text-center">Menge</th>
+            <th class="text-right">Einzelpreis</th>
+            <th class="text-right">Gesamt</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in beleg.artikel_list %}
+          <tr>
+            <td>{{ a.bezeichnung or '–' }}</td>
+            <td class="text-center text-muted">{{ a.menge or 1 }}</td>
+            <td class="text-right text-muted">
+              {{ a.einzelpreis | betrag(beleg.waehrung or 'EUR') if a.einzelpreis is not none else '–' }}
+            </td>
+            <td class="text-right betrag-cell">
+              {{ a.gesamtpreis | betrag(beleg.waehrung or 'EUR') if a.gesamtpreis is not none else '–' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        {% if beleg.gesamtbetrag %}
+        <tfoot>
+          <tr>
+            <td colspan="3" class="text-right"><strong>Gesamtbetrag</strong></td>
+            <td class="text-right"><strong>{{ beleg.gesamtbetrag | betrag(beleg.waehrung or 'EUR') }}</strong></td>
+          </tr>
+        </tfoot>
+        {% endif %}
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Quelle-Info ─────────────────────────────────────────── -->
+  {% if beleg.quelle_id %}
+  <div class="card card-subtle">
+    <div class="card-body">
+      <div class="field-label">Quell-Referenz</div>
+      <div class="source-id">{{ beleg.quelle_id }}</div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

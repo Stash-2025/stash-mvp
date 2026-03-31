@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">{{ current_month | monat_de }}</p>
+  </div>
+  <a href="{{ url_for('belege_liste') }}" class="btn btn-secondary">
+    Alle Belege →
+  </a>
+</div>
+
+<!-- ── Stats ─────────────────────────────────────────────────── -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Ausgaben diesen Monat</div>
+    <div class="stat-value money">{{ summary_month.gesamt | betrag }} EUR</div>
+    <div class="stat-sub">{{ summary_month.anzahl }} Beleg{{ 'e' if summary_month.anzahl != 1 else '' }}</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Gesamt (alle Zeit)</div>
+    <div class="stat-value">{{ summary_all.gesamt | betrag }} EUR</div>
+    <div class="stat-sub">{{ summary_all.anzahl }} Beleg{{ 'e' if summary_all.anzahl != 1 else '' }} insgesamt</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-label">Kategorien diesen Monat</div>
+    <div class="stat-value neutral">{{ summary_month.nach_kategorie | length }}</div>
+    <div class="stat-sub">verschiedene Kategorien</div>
+  </div>
+</div>
+
+<!-- ── Chart + Letzte Belege ──────────────────────────────────── -->
+<div class="dashboard-grid">
+
+  <!-- Kategorie-Chart -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Ausgaben nach Kategorie</h2>
+      <span class="card-badge">{{ current_month | monat_de }}</span>
+    </div>
+    <div class="card-body">
+      {% if summary_month.nach_kategorie %}
+        <div class="chart-container">
+          <canvas id="kategorieChart"></canvas>
+        </div>
+        <div class="kategorie-list">
+          {% for k in summary_month.nach_kategorie %}
+          <div class="kategorie-row">
+            <span class="kategorie-dot" style="background:{{ loop.index0 | kategorie_color }}"></span>
+            <span class="kategorie-name">{{ k.kategorie or 'Sonstiges' }}</span>
+            <span class="kategorie-betrag">{{ k.gesamt | betrag }} EUR</span>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state small">
+          <span>📊</span>
+          <p>Keine Belege diesen Monat</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Letzte Belege -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Zuletzt gespeichert</h2>
+      <a href="{{ url_for('belege_liste') }}" class="card-link">Alle anzeigen →</a>
+    </div>
+    <div class="card-body no-padding">
+      {% if recent %}
+        <table class="table">
+          <tbody>
+            {% for b in recent %}
+            <tr onclick="location.href='{{ url_for('beleg_detail', beleg_id=b.id) }}'" class="clickable">
+              <td>
+                <div class="beleg-row-main">
+                  <span class="quelle-badge">{{ b.quelle | quelle_icon }}</span>
+                  <div>
+                    <div class="beleg-haendler">{{ b.haendler or '–' }}</div>
+                    <div class="beleg-kategorie">{{ b.kategorie or '–' }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-right">
+                <div class="beleg-betrag {% if b.gesamtbetrag %}money{% endif %}">
+                  {{ b.gesamtbetrag | betrag(b.waehrung or 'EUR') if b.gesamtbetrag else '–' }}
+                </div>
+                <div class="beleg-datum">{{ b.datum | datum_de }}</div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="empty-state small">
+          <span>🧾</span>
+          <p>Noch keine Belege gespeichert</p>
+          <p class="hint">Starte mit <code>python stash.py foto meinbeleg.jpg</code></p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const labels  = {{ chart_labels | safe }};
+  const data    = {{ chart_data | safe }};
+  const colors  = {{ chart_colors | safe }};
+
+  if (labels.length > 0) {
+    const ctx = document.getElementById('kategorieChart');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors,
+          borderWidth: 2,
+          borderColor: '#fff',
+          hoverBorderWidth: 3,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        cutout: '65%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')} EUR`,
+            },
+          },
+        },
+      },
+    });
+  }
+</script>
+{% endblock %}

@@ -6,10 +6,22 @@ Stash kombiniert einen smarten E-Mail Spam-Filter mit automatischer Beleg-Erkenn
 
 ---
 
+## Web-Dashboard
+
+```bash
+python web_app.py
+# → http://localhost:5000
+```
+
+Login mit `DASHBOARD_PASSWORD` aus `.env` (Standard: `stash`). Das Dashboard zeigt alle gespeicherten Belege mit Statistiken, Kategorie-Diagramm, Filterfunktion und Detailansicht pro Beleg.
+
+---
+
 ## Features
 
 | Feature | Beschreibung |
 |---|---|
+| 🌐 **Web-Dashboard** | Lokales Flask-Dashboard mit Login, Übersicht, Filter & Detail |
 | 📧 **Spam-Filter** | Klassifiziert E-Mails automatisch als Spam / Normal / Wichtig |
 | 🧾 **E-Mail-Belege** | Erkennt Rechnungen & Bestellbestätigungen (mit PDF/Bild-Anhängen) |
 | 📷 **Foto-Belege** | Analysiert Kassenbons und Rechnungsfotos per Claude Vision |
