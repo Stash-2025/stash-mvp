@@ -1,32 +1,37 @@
 """
-E-Mail Spam-Filter mit Claude AI
-Unterstützt mehrere Konten gleichzeitig (iCloud + Gmail)
-- Liest E-Mails per IMAP
-- Klassifiziert sie mit Claude (Spam / Normal / Wichtig)
-- Verschiebt Spam automatisch in den Spam-Ordner
-- Sendet Benachrichtigung für wichtige E-Mails
+Stash – E-Mail Spam-Filter mit Claude AI
+Unterstützt mehrere Konten gleichzeitig (iCloud + Gmail).
+
+Funktionen:
+  - Liest ungelesene E-Mails per IMAP
+  - Klassifiziert sie mit Claude (Spam / Normal / Wichtig)
+  - Verschiebt Spam automatisch in den Spam-Ordner
+  - Sendet Benachrichtigung für wichtige E-Mails
+  - Erkennt Belege/Rechnungen und speichert sie automatisch
 """
 
-import imaplib
-import smtplib
 import email
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.header import decode_header
-import os
+import imaplib
 import json
+import os
+import smtplib
 from datetime import datetime
-from dotenv import load_dotenv
+from email.header import decode_header
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 import anthropic
+from dotenv import load_dotenv
 
 load_dotenv()
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", "20"))
-
-# Benachrichtigungen gehen an diese Adresse (Standard: erstes Konto)
 NOTIFY_EMAIL = os.getenv("NOTIFY_EMAIL", "tim.baer@icloud.com")
+
+# Belege automatisch aus gefilterten E-Mails extrahieren?
+AUTO_BELEG_SCAN = os.getenv("AUTO_BELEG_SCAN", "true").lower() == "true"
 
 # Vorkonfigurierte Server-Einstellungen
 PROVIDER_SETTINGS = {
@@ -44,10 +49,8 @@ PROVIDER_SETTINGS = {
     },
 }
 
-# Konten-Konfiguration: aus .env laden
 ACCOUNTS = []
 
-# Konto 1: iCloud (tim.baer@icloud.com)
 if os.getenv("ICLOUD_PASSWORD"):
     ACCOUNTS.append({
         "name": "iCloud (tim.baer@icloud.com)",
@@ -56,7 +59,6 @@ if os.getenv("ICLOUD_PASSWORD"):
         **PROVIDER_SETTINGS["icloud"],
     })
 
-# Konto 2: Gmail (timbaer05@gmail.com)
 if os.getenv("GMAIL_PASSWORD"):
     ACCOUNTS.append({
         "name": "Gmail (timbaer05@gmail.com)",
@@ -66,8 +68,10 @@ if os.getenv("GMAIL_PASSWORD"):
     })
 
 
+# ─── E-Mail Hilfsfunktionen ───────────────────────────────────────────────────
+
 def decode_str(value: str) -> str:
-    """Dekodiert E-Mail-Header (z.B. UTF-8, Base64)."""
+    """Dekodiert E-Mail-Header (UTF-8, Base64, etc.)."""
     if not value:
         return ""
     parts = decode_header(value)
@@ -84,7 +88,7 @@ def decode_str(value: str) -> str:
 
 
 def get_email_body(msg) -> str:
-    """Extrahiert den Text-Body einer E-Mail (max. 2000 Zeichen)."""
+    """Extrahiert den Text-Body einer E-Mail (max. 3000 Zeichen)."""
     body = ""
     if msg.is_multipart():
         for part in msg.walk():
@@ -105,13 +109,15 @@ def get_email_body(msg) -> str:
             body = msg.get_payload(decode=True).decode("utf-8", errors="replace")
         except Exception:
             body = ""
-    return body[:2000]
+    return body[:3000]
 
+
+# ─── Spam-Klassifikation ──────────────────────────────────────────────────────
 
 def classify_emails_with_claude(emails: list[dict]) -> list[dict]:
     """
     Klassifiziert mehrere E-Mails auf einmal mit Claude.
-    Gibt für jede E-Mail zurück: kategorie (spam/normal/wichtig) + begruendung
+    Kategorien: spam / normal / wichtig
     """
     email_list_text = ""
     for i, e in enumerate(emails):
@@ -127,7 +133,7 @@ Inhalt (Auszug): {e['body'][:500]}
     prompt = f"""Du bist ein intelligenter E-Mail-Filter für Tim Bär. Analysiere die folgenden E-Mails und klassifiziere jede als:
 - "spam": Werbung, Newsletter ohne Relevanz, verdächtige Absender, Phishing, automatische Benachrichtigungen ohne Handlungsbedarf
 - "normal": Normale E-Mails, die gelesen werden können, aber keine sofortige Reaktion erfordern
-- "wichtig": E-Mails, die sofortige Aufmerksamkeit erfordern (persönliche Nachrichten, wichtige Termine, finanzielle Angelegenheiten, dringende Anfragen, Sicherheitswarnungen)
+- "wichtig": E-Mails, die sofortige Aufmerksamkeit erfordern (persönliche Nachrichten, wichtige Termine, finanzielle Angelegenheiten, dringende Anfragen, Sicherheitswarnungen, Bestellbestätigungen, Rechnungen)
 
 Antworte NUR mit einem JSON-Array. Für jede E-Mail ein Objekt mit:
 - "index": Nummer der E-Mail (beginnend bei 0)
@@ -148,15 +154,12 @@ JSON-Antwort:"""
     )
 
     result_text = response.content[0].text.strip()
-
-    # JSON aus der Antwort extrahieren
     if "```" in result_text:
         result_text = result_text.split("```")[1]
         if result_text.startswith("json"):
             result_text = result_text[4:]
 
     classifications = json.loads(result_text)
-
     for item in classifications:
         idx = item["index"]
         emails[idx]["kategorie"] = item["kategorie"]
@@ -165,56 +168,83 @@ JSON-Antwort:"""
     return emails
 
 
-def move_to_spam(imap: imaplib.IMAP4_SSL, email_id: bytes, provider: str):
+# ─── Beleg-Erkennung (integriert in Spam-Filter) ─────────────────────────────
+
+def _try_save_receipt_from_email(msg, message_id: str, account_name: str) -> int:
+    """
+    Prüft ob diese E-Mail einen Beleg enthält und speichert ihn falls ja.
+    Gibt die Anzahl gespeicherter Belege zurück.
+    """
+    try:
+        from database import beleg_exists, save_beleg
+        from receipt_analyzer import analyze_email_message
+
+        if beleg_exists(message_id):
+            return 0
+
+        results = analyze_email_message(msg, client, message_id=message_id)
+        saved = 0
+        for data in results:
+            quelle_id = data.pop("_quelle_id", message_id)
+            data.pop("_quelle", None)
+            beleg_id = save_beleg("email", quelle_id, data)
+            if beleg_id:
+                haendler = data.get("haendler") or "Unbekannt"
+                betrag = data.get("gesamtbetrag")
+                betrag_str = f"{betrag:.2f} {data.get('waehrung', 'EUR')}" if betrag else "Betrag unbekannt"
+                print(f"   🧾 Beleg gespeichert: {haendler} – {betrag_str}")
+                saved += 1
+        return saved
+
+    except Exception as e:
+        print(f"   ⚠️  Beleg-Analyse fehlgeschlagen: {e}")
+        return 0
+
+
+# ─── Spam-Ordner / Benachrichtigungen ─────────────────────────────────────────
+
+def move_to_spam(imap: imaplib.IMAP4_SSL, email_id: bytes, provider: str) -> bool:
     """Verschiebt eine E-Mail in den Spam-Ordner (providerspezifisch)."""
-    if provider == "gmail":
-        spam_folders = ["[Gmail]/Spam", "[Gmail]/Trash"]
-    elif provider == "icloud":
-        spam_folders = ["Junk", "JUNK", "Spam"]
-    else:
-        spam_folders = ["Junk", "Spam", "[Gmail]/Spam"]
+    spam_folders = {
+        "gmail": ["[Gmail]/Spam", "[Gmail]/Trash"],
+        "icloud": ["Junk", "JUNK", "Spam"],
+    }.get(provider, ["Junk", "Spam", "[Gmail]/Spam"])
 
     for folder in spam_folders:
         try:
-            result = imap.copy(email_id, folder)
-            if result[0] == "OK":
+            if imap.copy(email_id, folder)[0] == "OK":
                 imap.store(email_id, "+FLAGS", "\\Deleted")
                 return True
         except Exception:
             continue
 
-    # Fallback: als gelesen markieren
     imap.store(email_id, "+FLAGS", "\\Seen")
     return False
 
 
-def send_notification(wichtige_emails: list[dict], notify_account: dict):
+def send_notification(wichtige_emails: list[dict], notify_account: dict) -> None:
     """Sendet eine Benachrichtigungs-E-Mail für wichtige Mails."""
     if not wichtige_emails:
         return
 
     subject = f"🔔 {len(wichtige_emails)} wichtige E-Mail(s) – Tim Bär"
-
-    body_lines = [
-        "Hallo Tim,\n",
-        "du hast folgende wichtige E-Mails erhalten:\n",
-    ]
+    lines = ["Hallo Tim,\n", "du hast folgende wichtige E-Mails erhalten:\n"]
     for i, e in enumerate(wichtige_emails, 1):
-        body_lines.append(f"{i}. Konto: {e['account']}")
-        body_lines.append(f"   Von: {e['from']}")
-        body_lines.append(f"   Betreff: {e['subject']}")
-        body_lines.append(f"   Datum: {e['date']}")
-        body_lines.append(f"   Warum wichtig: {e['begruendung']}")
-        body_lines.append("")
-
-    body_lines.append("Bitte prüfe diese E-Mails zeitnah.")
-    body = "\n".join(body_lines)
+        lines += [
+            f"{i}. Konto: {e['account']}",
+            f"   Von: {e['from']}",
+            f"   Betreff: {e['subject']}",
+            f"   Datum: {e['date']}",
+            f"   Warum wichtig: {e['begruendung']}",
+            "",
+        ]
+    lines.append("Bitte prüfe diese E-Mails zeitnah.")
 
     msg = MIMEMultipart()
     msg["From"] = notify_account["address"]
     msg["To"] = NOTIFY_EMAIL
     msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
+    msg.attach(MIMEText("\n".join(lines), "plain", "utf-8"))
 
     with smtplib.SMTP(notify_account["smtp_server"], notify_account["smtp_port"]) as server:
         server.starttls()
@@ -224,8 +254,10 @@ def send_notification(wichtige_emails: list[dict], notify_account: dict):
     print(f"✉️  Benachrichtigung gesendet an {NOTIFY_EMAIL}")
 
 
+# ─── Konto-Verarbeitung ───────────────────────────────────────────────────────
+
 def get_provider(address: str) -> str:
-    """Ermittelt den Provider anhand der E-Mail-Adresse."""
+    """Ermittelt den E-Mail-Provider anhand der Adresse."""
     domain = address.split("@")[-1].lower()
     if "icloud" in domain or "me.com" in domain or "mac.com" in domain:
         return "icloud"
@@ -235,10 +267,16 @@ def get_provider(address: str) -> str:
 
 
 def process_account(account: dict) -> tuple[list[dict], int, int, int]:
-    """Verarbeitet ein einzelnes E-Mail-Konto. Gibt wichtige E-Mails + Statistik zurück."""
+    """
+    Verarbeitet ein E-Mail-Konto:
+      1. Klassifiziert ungelesene E-Mails (Spam / Normal / Wichtig)
+      2. Erkennt Belege in nicht-Spam E-Mails und speichert sie (falls AUTO_BELEG_SCAN)
+    Gibt wichtige E-Mails + Statistik zurück.
+    """
     provider = get_provider(account["address"])
     wichtige_emails = []
     stats = {"spam": 0, "normal": 0, "wichtig": 0}
+    belege_gespeichert = 0
 
     print(f"\n{'─'*60}")
     print(f"📬 {account['name']}")
@@ -262,9 +300,12 @@ def process_account(account: dict) -> tuple[list[dict], int, int, int]:
 
     # E-Mails laden
     emails_data = []
+    raw_msgs = {}  # email_id → parsed Message (für Beleg-Scan)
     for email_id in reversed(ids_to_process):
         _, msg_data = imap.fetch(email_id, "(RFC822)")
-        msg = email.message_from_bytes(msg_data[0][1])
+        raw_bytes = msg_data[0][1]
+        msg = email.message_from_bytes(raw_bytes)
+        raw_msgs[email_id] = msg
         emails_data.append({
             "id": email_id,
             "account": account["name"],
@@ -272,6 +313,7 @@ def process_account(account: dict) -> tuple[list[dict], int, int, int]:
             "subject": decode_str(msg.get("Subject", "(kein Betreff)")),
             "date": msg.get("Date", ""),
             "body": get_email_body(msg),
+            "message_id": msg.get("Message-ID", "").strip(),
             "kategorie": "normal",
             "begruendung": "",
         })
@@ -285,8 +327,8 @@ def process_account(account: dict) -> tuple[list[dict], int, int, int]:
         kategorie = e["kategorie"]
         stats[kategorie] = stats.get(kategorie, 0) + 1
 
-        icon = {"spam": "🗑️ SPAM  ", "normal": "📄 Normal", "wichtig": "⭐ WICHTIG"}[kategorie]
-        print(f"  {icon} | {e['from'][:38]}")
+        icons = {"spam": "🗑️  SPAM  ", "normal": "📄 Normal", "wichtig": "⭐ WICHTIG"}
+        print(f"  {icons[kategorie]} | {e['from'][:38]}")
         print(f"           {e['subject'][:48]}")
         print(f"           → {e['begruendung']}\n")
 
@@ -294,20 +336,94 @@ def process_account(account: dict) -> tuple[list[dict], int, int, int]:
             move_to_spam(imap, e["id"], provider)
         elif kategorie == "wichtig":
             wichtige_emails.append(e)
+            imap.store(e["id"], "-FLAGS", "\\Seen")  # wichtige E-Mails ungelesen lassen
         else:
             imap.store(e["id"], "+FLAGS", "\\Seen")
+
+        # Belege aus nicht-Spam E-Mails extrahieren
+        if AUTO_BELEG_SCAN and kategorie != "spam":
+            msg = raw_msgs.get(e["id"])
+            message_id = e.get("message_id") or f"{account['address']}_{e['id'].decode()}"
+            if msg:
+                belege_gespeichert += _try_save_receipt_from_email(msg, message_id, account["name"])
 
     imap.expunge()
     imap.logout()
 
+    if belege_gespeichert:
+        print(f"   💾 {belege_gespeichert} Beleg(e) automatisch gespeichert\n")
+
     return wichtige_emails, stats["spam"], stats["normal"], stats["wichtig"]
 
 
-def run_filter():
-    """Hauptfunktion: Alle Konten verarbeiten."""
+# ─── Dedizierter E-Mail-Beleg-Scan ────────────────────────────────────────────
+
+def scan_account_for_receipts(account: dict, days: int = 30) -> int:
+    """
+    Scannt alle E-Mails der letzten `days` Tage nach Belegen.
+    Gibt die Anzahl neu gespeicherter Belege zurück.
+    """
+    from database import beleg_exists, save_beleg
+    from receipt_analyzer import analyze_email_message
+
+    provider = get_provider(account["address"])
+    print(f"\n{'─'*60}")
+    print(f"🔍 Scanne nach Belegen: {account['name']}")
+    print(f"{'─'*60}")
+    print(f"🔌 Verbinde mit {account['imap_server']}...")
+
+    imap = imaplib.IMAP4_SSL(account["imap_server"], account["imap_port"])
+    imap.login(account["address"], account["password"])
+    imap.select("INBOX")
+
+    # Datum-Filter: letzte N Tage
+    from datetime import timedelta
+    since_date = (datetime.now() - timedelta(days=days)).strftime("%d-%b-%Y")
+    _, message_ids = imap.search(None, f'SINCE "{since_date}"')
+    all_ids = message_ids[0].split()
+
+    print(f"📧 {len(all_ids)} E-Mail(s) der letzten {days} Tage gefunden\n")
+
+    new_receipts = 0
+    for email_id in all_ids:
+        try:
+            _, msg_data = imap.fetch(email_id, "(RFC822)")
+            msg = email.message_from_bytes(msg_data[0][1])
+            message_id = msg.get("Message-ID", "").strip()
+            if not message_id:
+                message_id = f"{account['address']}_{email_id.decode()}"
+
+            # Beleg-Scan (mit Duplikat-Schutz)
+            results = analyze_email_message(msg, client, message_id=message_id)
+            for data in results:
+                quelle_id = data.pop("_quelle_id", message_id)
+                data.pop("_quelle", None)
+                beleg_id = save_beleg("email", quelle_id, data)
+                if beleg_id:
+                    haendler = data.get("haendler") or "Unbekannt"
+                    betrag = data.get("gesamtbetrag")
+                    betrag_str = f"{betrag:.2f} {data.get('waehrung', 'EUR')}" if betrag else "?"
+                    subj = decode_str(msg.get("Subject", ""))[:45]
+                    print(f"  🧾 {haendler} – {betrag_str}  ({subj})")
+                    new_receipts += 1
+
+        except Exception as e:
+            print(f"  ⚠️  Fehler bei E-Mail {email_id}: {e}")
+            continue
+
+    imap.logout()
+    return new_receipts
+
+
+# ─── Hauptfunktionen ──────────────────────────────────────────────────────────
+
+def run_filter() -> None:
+    """Spam-Filter: Alle konfigurierten Konten verarbeiten."""
     print(f"\n{'='*60}")
-    print(f"  E-Mail Spam-Filter  |  {datetime.now().strftime('%d.%m.%Y %H:%M')}")
+    print(f"  📬 E-Mail Spam-Filter  |  {datetime.now().strftime('%d.%m.%Y %H:%M')}")
     print(f"  Tim Bär – {len(ACCOUNTS)} Konto(s) konfiguriert")
+    if AUTO_BELEG_SCAN:
+        print("  🧾 Auto-Beleg-Erkennung: aktiv")
     print(f"{'='*60}")
 
     if not ACCOUNTS:
@@ -325,7 +441,6 @@ def run_filter():
         gesamt_stats["normal"] += normal
         gesamt_stats["wichtig"] += wichtig
 
-    # Gesamtzusammenfassung
     print(f"\n{'='*60}")
     print("📈 Gesamtzusammenfassung (alle Konten):")
     print(f"   ⭐ Wichtig:  {gesamt_stats['wichtig']}")
@@ -333,12 +448,31 @@ def run_filter():
     print(f"   🗑️  Spam:     {gesamt_stats['spam']}")
     print(f"{'='*60}\n")
 
-    # Benachrichtigung senden
     if alle_wichtigen:
         print(f"📨 Sende Benachrichtigung für {len(alle_wichtigen)} wichtige E-Mail(s)...")
         send_notification(alle_wichtigen, notify_account)
 
     print("✅ Fertig!\n")
+
+
+def run_receipt_scan(days: int = 30) -> None:
+    """Dedizierter Beleg-Scan für alle Konten."""
+    print(f"\n{'='*60}")
+    print(f"  🧾 Beleg-Scanner  |  {datetime.now().strftime('%d.%m.%Y %H:%M')}")
+    print(f"  Zeitraum: letzte {days} Tage")
+    print(f"{'='*60}")
+
+    if not ACCOUNTS:
+        print("\n❌ Keine Konten konfiguriert. Bitte .env befüllen.")
+        return
+
+    total = 0
+    for account in ACCOUNTS:
+        total += scan_account_for_receipts(account, days=days)
+
+    print(f"\n{'='*60}")
+    print(f"✅ Scan abgeschlossen – {total} neue Beleg(e) gespeichert")
+    print(f"{'='*60}\n")
 
 
 if __name__ == "__main__":
