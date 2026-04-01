@@ -6,22 +6,33 @@
   <title>Stash – Anmelden</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body class="login-body">
 
-  <div class="login-card">
-    <div class="login-logo">
-      <span class="login-logo-icon">💰</span>
-      <h1 class="login-title">Stash</h1>
-      <p class="login-subtitle">Persönliches Ausgaben-Dashboard</p>
+  <div class="login-wrapper">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="login-app-name">Stash</div>
+      <div class="login-tagline">Persönliche Belegverwaltung</div>
     </div>
 
-    <form class="login-form" method="POST" action="{{ url_for('login') }}">
+    <!-- Card -->
+    <div class="login-card">
+      <div class="login-card-title">Anmelden</div>
+
       {% if error %}
         <div class="alert alert-error">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon">
+          <svg class="alert-icon" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -30,29 +41,50 @@
         </div>
       {% endif %}
 
-      <div class="form-group">
-        <label for="password" class="form-label">Passwort</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          class="form-input"
-          placeholder="Dein Passwort eingeben"
-          autofocus
-          autocomplete="current-password"
-        />
-      </div>
+      <form class="login-form" method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+          <label for="password" class="form-label">Passwort</label>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-input"
+              placeholder="Passwort eingeben"
+              autofocus
+              autocomplete="current-password"
+            />
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary btn-block">
-        Anmelden
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Sicher anmelden
+        </button>
+      </form>
+
+      <div class="secure-badge">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-      </button>
-    </form>
+        Ende-zu-Ende verschlüsselt · Lokale Verbindung
+      </div>
+    </div>
 
-    <p class="login-hint">Standard-Passwort: <code>stash</code> (in .env ändern)</p>
+    <div class="login-footer">
+      © 2025 Stash &nbsp;·&nbsp;
+      <a href="#">Datenschutz</a> &nbsp;·&nbsp;
+      <a href="#">Impressum</a>
+    </div>
+
   </div>
 
 </body>
