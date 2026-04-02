@@ -26,13 +26,13 @@
       <div class="login-tagline">Persönliche Belegverwaltung</div>
     </div>
 
-    <!-- Card -->
+    <!-- Login Card -->
     <div class="login-card">
       <div class="login-card-title">Anmelden</div>
 
       {% if error %}
         <div class="alert alert-error">
-          <svg class="alert-icon" viewBox="0 0 24 24">
+          <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -41,11 +41,38 @@
         </div>
       {% endif %}
 
-      <form class="login-form" method="POST" action="{{ url_for('login') }}">
+      <form method="POST" action="{{ url_for('login') }}">
+
         <div class="form-group">
-          <label for="password" class="form-label">Passwort</label>
+          <label for="email" class="form-label">E-Mail-Adresse</label>
           <div class="input-group">
-            <svg class="input-icon" viewBox="0 0 24 24">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-input"
+              placeholder="name@beispiel.ch"
+              value="{{ request.form.get('email', '') }}"
+              autocomplete="email"
+              autofocus
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:.5rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem;">
+            <label for="password" class="form-label" style="margin:0;">Passwort</label>
+            <a href="{{ url_for('passwort_vergessen') }}" class="pw-vergessen-link">
+              Passwort vergessen?
+            </a>
+          </div>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
@@ -55,13 +82,13 @@
               name="password"
               class="form-input"
               placeholder="Passwort eingeben"
-              autofocus
               autocomplete="current-password"
+              required
             />
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg">
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:1rem;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
             <polyline points="10 17 15 12 10 7"/>
@@ -75,14 +102,13 @@
         <svg viewBox="0 0 24 24">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        Ende-zu-Ende verschlüsselt · Lokale Verbindung
+        Verschlüsselte Verbindung · Lokale Datenhaltung
       </div>
     </div>
 
     <div class="login-footer">
       © 2025 Stash &nbsp;·&nbsp;
-      <a href="#">Datenschutz</a> &nbsp;·&nbsp;
-      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
     </div>
 
   </div>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stash – Konto einrichten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="login-body">
+
+  <div class="login-wrapper">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="login-app-name">Stash</div>
+      <div class="login-tagline">Willkommen – Konto einrichten</div>
+    </div>
+
+    <!-- Setup Card -->
+    <div class="login-card">
+      <div class="login-card-title">Erstes Benutzerkonto erstellen</div>
+      <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.55;">
+        Dieses Konto wird für den Zugriff auf das Dashboard verwendet.
+        Du kannst es danach unter <strong>Profil</strong> jederzeit ändern.
+      </p>
+
+      <form method="POST" action="{{ url_for('setup') }}">
+
+        <div class="form-group">
+          <label for="name" class="form-label">Vollständiger Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-input{% if errors.name %} input-error{% endif %}"
+            placeholder="z.B. Tim Bär"
+            value="{{ form.name or '' }}"
+            autocomplete="name"
+            autofocus
+            required
+          />
+          {% if errors.name %}<div class="field-error">{{ errors.name }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">E-Mail-Adresse</label>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-input{% if errors.email %} input-error{% endif %}"
+              placeholder="name@beispiel.ch"
+              value="{{ form.email or '' }}"
+              autocomplete="email"
+              required
+            />
+          </div>
+          {% if errors.email %}<div class="field-error">{{ errors.email }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Passwort</label>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-input{% if errors.password %} input-error{% endif %}"
+              placeholder="Mindestens 8 Zeichen"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          {% if errors.password %}<div class="field-error">{{ errors.password }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="password2" class="form-label">Passwort bestätigen</label>
+          <div class="input-group">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <input
+              type="password"
+              id="password2"
+              name="password2"
+              class="form-input{% if errors.password2 %} input-error{% endif %}"
+              placeholder="Passwort wiederholen"
+              autocomplete="new-password"
+              required
+            />
+          </div>
+          {% if errors.password2 %}<div class="field-error">{{ errors.password2 }}</div>{% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.5rem;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/>
+            <line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
+          Konto erstellen und anmelden
+        </button>
+      </form>
+
+      <div class="secure-badge">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        Passwort wird sicher gehasht gespeichert
+      </div>
+    </div>
+
+    <div class="login-footer">
+      © 2025 Stash · Lokale Anwendung
+    </div>
+
+  </div>
+
+</body>
+</html>

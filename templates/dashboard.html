@@ -10,7 +10,7 @@
 <!-- Page Header -->
 <div class="page-header">
   <div>
-    <h1 class="page-title">Übersicht</h1>
+    <h1 class="page-title">{{ gruss }}, {{ vorname }}.</h1>
     <p class="page-sub">{{ current_month | monat_de }}</p>
   </div>
   <a href="{{ url_for('belege_liste') }}" class="btn btn-secondary btn-sm">

@@ -863,6 +863,43 @@ code {
 
 .login-form .btn-lg { padding: .625rem 1.25rem; font-size: .9375rem; }
 
+/* "Passwort vergessen?" link */
+.pw-vergessen-link {
+  font-size: .8125rem;
+  color: var(--text-muted);
+  transition: color var(--dur);
+}
+.pw-vergessen-link:hover { color: var(--green-dark); text-decoration: underline; }
+
+/* Form validation */
+.form-input.input-error,
+.form-select.input-error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.12);
+}
+.form-input.input-error:focus,
+.form-select.input-error:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.18);
+}
+.field-error {
+  margin-top: .35rem;
+  font-size: .8rem;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+.field-error::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
 /* Secure session badge */
 .secure-badge {
   display: flex;

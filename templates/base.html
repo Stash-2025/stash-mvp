@@ -64,15 +64,25 @@
       </a>
     </nav>
 
-    <!-- Footer -->
+    <!-- Footer: User + Settings -->
     <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="user-avatar">TB</div>
-        <div>
-          <div class="user-name">Tim Bär</div>
-          <div class="user-email">tim.baer@icloud.com</div>
+      <a href="{{ url_for('profil') }}"
+         class="nav-item {% if request.endpoint == 'profil' %}active{% endif %}">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.8125rem;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ current_user.name }}
+          </div>
+          <div style="font-size:.7rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+            {{ current_user.email }}
+          </div>
         </div>
-      </div>
+      </a>
 
       <a href="{{ url_for('logout') }}" class="nav-item logout">
         <span class="nav-icon">
