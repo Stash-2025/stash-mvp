@@ -9,15 +9,19 @@ Befehle:
   liste           Gespeicherte Belege anzeigen
   zusammenfassung Ausgaben-Zusammenfassung nach Kategorie
   export          Belege als CSV exportieren
+  user create     Neues Dashboard-Benutzerkonto erstellen
+  user list       Alle Benutzerkonten anzeigen
+  user reset-password  Passwort zurücksetzen
 
 Beispiele:
   python stash.py filter
   python stash.py scan --tage 60
   python stash.py foto kassenbon.jpg
-  python stash.py foto rechnung.pdf
   python stash.py liste --monat 2025-03
   python stash.py zusammenfassung
   python stash.py export --output ausgaben_2025.csv
+  python stash.py user create
+  python stash.py user reset-password tim@beispiel.ch
 """
 
 import os
@@ -273,6 +277,88 @@ def cmd_export(output: str, monat: str | None):
     except Exception as e:
         click.echo(f"❌ Export fehlgeschlagen: {e}", err=True)
         sys.exit(1)
+
+
+# ─── user ────────────────────────────────────────────────────────────────────
+
+@cli.group(name="user", help="Benutzerverwaltung für das Web-Dashboard.")
+def user_group():
+    pass
+
+
+@user_group.command(name="create", help="Neues Benutzerkonto erstellen.")
+@click.option("--name",  prompt="Name",            help="Vollständiger Name")
+@click.option("--email", prompt="E-Mail-Adresse",  help="E-Mail-Adresse")
+@click.option("--password", prompt="Passwort", hide_input=True,
+              confirmation_prompt="Passwort bestätigen", help="Passwort (min. 8 Zeichen)")
+def user_create(name: str, email: str, password: str):
+    """Legt ein neues Benutzerkonto an."""
+    from werkzeug.security import generate_password_hash
+    from database import create_user
+
+    if len(password) < 8:
+        click.echo("❌ Passwort muss mindestens 8 Zeichen haben.", err=True)
+        sys.exit(1)
+
+    try:
+        user = create_user(name, email, generate_password_hash(password))
+        click.echo(f"\n✅ Konto erstellt:")
+        click.echo(f"   Name:  {user['name']}")
+        click.echo(f"   Email: {user['email']}")
+        click.echo(f"   ID:    #{user['id']}")
+        click.echo(f"\n   Dashboard: http://localhost:5000\n")
+    except ValueError as e:
+        click.echo(f"❌ {e}", err=True)
+        sys.exit(1)
+
+
+@user_group.command(name="list", help="Alle Benutzerkonten anzeigen.")
+def user_list():
+    """Zeigt alle registrierten Benutzer."""
+    import sqlite3
+    from database import _get_conn
+
+    conn = _get_conn()
+    rows = conn.execute("SELECT id, name, email, erstellt_am FROM users ORDER BY id").fetchall()
+    conn.close()
+
+    if not rows:
+        click.echo("\n  Keine Benutzer vorhanden. Erstelle ein Konto mit:\n"
+                   "  python stash.py user create\n")
+        return
+
+    click.echo(f"\n  {'ID':>4}  {'Name':<20}  {'E-Mail':<32}  {'Erstellt'}")
+    click.echo(f"  {'─'*4}  {'─'*20}  {'─'*32}  {'─'*10}")
+    for r in rows:
+        erstellt = r["erstellt_am"][:10] if r["erstellt_am"] else "–"
+        click.echo(f"  {r['id']:>4}  {r['name'][:20]:<20}  {r['email'][:32]:<32}  {erstellt}")
+    click.echo()
+
+
+@user_group.command(name="reset-password", help="Passwort eines Benutzers zurücksetzen.")
+@click.argument("email", required=False)
+def user_reset_password(email: str | None):
+    """Setzt das Passwort für eine E-Mail-Adresse zurück."""
+    from werkzeug.security import generate_password_hash
+    from database import get_user_by_email, update_user_password
+
+    if not email:
+        email = click.prompt("E-Mail-Adresse des Benutzers")
+
+    user = get_user_by_email(email)
+    if not user:
+        click.echo(f"❌ Kein Benutzer mit der Adresse '{email}' gefunden.", err=True)
+        sys.exit(1)
+
+    click.echo(f"\n  Benutzer: {user['name']} <{user['email']}>")
+    new_pw = click.prompt("Neues Passwort", hide_input=True, confirmation_prompt="Wiederholen")
+
+    if len(new_pw) < 8:
+        click.echo("❌ Passwort muss mindestens 8 Zeichen haben.", err=True)
+        sys.exit(1)
+
+    update_user_password(user["id"], generate_password_hash(new_pw))
+    click.echo(f"✅ Passwort für {user['email']} wurde zurückgesetzt.\n")
 
 
 # ─── Einstiegspunkt ───────────────────────────────────────────────────────────

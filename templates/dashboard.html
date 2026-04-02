@@ -1,154 +1,168 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-
-{% block head %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-{% endblock %}
+{% block title %}Übersicht{% endblock %}
 
 {% block content %}
 
-<div class="page-header">
+<!-- Greeting row -->
+<div class="dash-top">
   <div>
-    <h1 class="page-title">Dashboard</h1>
-    <p class="page-sub">{{ current_month | monat_de }}</p>
+    <h1 class="page-title">{{ gruss }}, {{ vorname }}.</h1>
+    <p class="page-sub">Ihre Ausgaben auf einen Blick</p>
   </div>
-  <a href="{{ url_for('belege_liste') }}" class="btn btn-secondary">
-    Alle Belege →
+  <a href="{{ url_for('belege_liste') }}" class="btn btn-secondary btn-sm">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    Alle Belege
   </a>
 </div>
 
-<!-- ── Stats ─────────────────────────────────────────────────── -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-label">Ausgaben diesen Monat</div>
-    <div class="stat-value money">{{ summary_month.gesamt | betrag }} EUR</div>
-    <div class="stat-sub">{{ summary_month.anzahl }} Beleg{{ 'e' if summary_month.anzahl != 1 else '' }}</div>
+<!-- ═══ Hero Summary Card ═══════════════════════════════════════ -->
+<div class="summary-card">
+
+  <!-- Month Navigation -->
+  <div class="month-nav">
+    <a href="?monat={{ prev_month }}" class="month-nav-btn" aria-label="Vormonat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <span class="month-nav-label">{{ current_month | monat_de }}</span>
+    <a href="?monat={{ next_month }}"
+       class="month-nav-btn {% if is_current_month %}disabled{% endif %}"
+       aria-label="Nächster Monat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-label">Gesamt (alle Zeit)</div>
-    <div class="stat-value">{{ summary_all.gesamt | betrag }} EUR</div>
-    <div class="stat-sub">{{ summary_all.anzahl }} Beleg{{ 'e' if summary_all.anzahl != 1 else '' }} insgesamt</div>
+  <!-- Total Amount -->
+  <div class="summary-amount-row">
+    <span class="summary-currency">CHF</span>
+    <span class="summary-amount">{{ summary_month.gesamt | betrag_zahl if summary_month.gesamt else '0,00' }}</span>
+  </div>
+  <div class="summary-label">Ausgaben {{ current_month | monat_de }}</div>
+
+  <!-- Stats Row -->
+  <div class="summary-stats">
+    <div class="summary-stat">
+      <span class="summary-stat-value">{{ summary_month.anzahl }}</span>
+      <span class="summary-stat-label">Belege erfasst</span>
+    </div>
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      {% if change_pct is not none %}
+        <span class="summary-stat-value {% if change_pct > 0 %}stat-up{% elif change_pct < 0 %}stat-down{% endif %}">
+          {% if change_pct > 0 %}+{% endif %}{{ change_pct | round(1) }}%
+        </span>
+      {% else %}
+        <span class="summary-stat-value">–</span>
+      {% endif %}
+      <span class="summary-stat-label">vs. Vormonat</span>
+    </div>
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      <span class="summary-stat-value">
+        {% if avg_per_beleg %}CHF {{ avg_per_beleg | betrag_zahl }}{% else %}–{% endif %}
+      </span>
+      <span class="summary-stat-label">Ø pro Beleg</span>
+    </div>
+    {% if summary_month.nach_kategorie %}
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      <span class="summary-stat-value">{{ summary_month.nach_kategorie | length }}</span>
+      <span class="summary-stat-label">Kategorien</span>
+    </div>
+    {% endif %}
   </div>
 
-  <div class="stat-card">
-    <div class="stat-label">Kategorien diesen Monat</div>
-    <div class="stat-value neutral">{{ summary_month.nach_kategorie | length }}</div>
-    <div class="stat-sub">verschiedene Kategorien</div>
-  </div>
 </div>
 
-<!-- ── Chart + Letzte Belege ──────────────────────────────────── -->
-<div class="dashboard-grid">
+<!-- ═══ Transaction List ═════════════════════════════════════════ -->
 
-  <!-- Kategorie-Chart -->
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Ausgaben nach Kategorie</h2>
-      <span class="card-badge">{{ current_month | monat_de }}</span>
-    </div>
-    <div class="card-body">
-      {% if summary_month.nach_kategorie %}
-        <div class="chart-container">
-          <canvas id="kategorieChart"></canvas>
+{% if grouped_tx %}
+
+  <div class="tx-list-card">
+    {% for group in grouped_tx %}
+
+    <div class="tx-section">
+      <div class="tx-date-header">
+        {{ group.date | tx_date_label }}
+        <span class="tx-date-sub">
+          {% set group_total = namespace(v=0) %}
+          {% for b in group.belege %}{% if b.gesamtbetrag %}{% set group_total.v = group_total.v + b.gesamtbetrag %}{% endif %}{% endfor %}
+          {% if group_total.v %}CHF {{ group_total.v | betrag_zahl }}{% endif %}
+        </span>
+      </div>
+
+      {% for b in group.belege %}
+      <a href="{{ url_for('beleg_detail', beleg_id=b.id) }}" class="tx-row">
+
+        <!-- Merchant Avatar -->
+        <div class="merchant-avatar" style="background: {{ b.haendler | merchant_color }}">
+          {{ b.haendler | merchant_initial }}
         </div>
-        <div class="kategorie-list">
-          {% for k in summary_month.nach_kategorie %}
-          <div class="kategorie-row">
-            <span class="kategorie-dot" style="background:{{ loop.index0 | kategorie_color }}"></span>
-            <span class="kategorie-name">{{ k.kategorie or 'Sonstiges' }}</span>
-            <span class="kategorie-betrag">{{ k.gesamt | betrag }} EUR</span>
+
+        <!-- Info -->
+        <div class="tx-info">
+          <div class="tx-haendler">{{ b.haendler or 'Unbekannter Händler' }}</div>
+          <div class="tx-meta">
+            {% if b.kategorie %}
+            <span class="tx-kat-tag">{{ b.kategorie }}</span>
+            {% endif %}
+            <span class="tx-quelle">
+              {% if b.quelle == 'email' %}per E-Mail
+              {% elif b.quelle == 'pdf' %}PDF
+              {% else %}Foto{% endif %}
+            </span>
           </div>
-          {% endfor %}
         </div>
-      {% else %}
-        <div class="empty-state small">
-          <span>📊</span>
-          <p>Keine Belege diesen Monat</p>
+
+        <!-- Amount -->
+        <div class="tx-right">
+          <div class="tx-betrag">
+            {% if b.gesamtbetrag %}
+              –{{ b.gesamtbetrag | betrag_zahl }}
+              <span class="tx-waehrung">{{ b.waehrung or 'CHF' }}</span>
+            {% else %}
+              <span class="tx-betrag-unbekannt">–</span>
+            {% endif %}
+          </div>
+          <div class="tx-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
         </div>
-      {% endif %}
+
+      </a>
+      {% endfor %}
+
     </div>
+    {% endfor %}
   </div>
 
-  <!-- Letzte Belege -->
+{% else %}
+
   <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Zuletzt gespeichert</h2>
-      <a href="{{ url_for('belege_liste') }}" class="card-link">Alle anzeigen →</a>
-    </div>
-    <div class="card-body no-padding">
-      {% if recent %}
-        <table class="table">
-          <tbody>
-            {% for b in recent %}
-            <tr onclick="location.href='{{ url_for('beleg_detail', beleg_id=b.id) }}'" class="clickable">
-              <td>
-                <div class="beleg-row-main">
-                  <span class="quelle-badge">{{ b.quelle | quelle_icon }}</span>
-                  <div>
-                    <div class="beleg-haendler">{{ b.haendler or '–' }}</div>
-                    <div class="beleg-kategorie">{{ b.kategorie or '–' }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="text-right">
-                <div class="beleg-betrag {% if b.gesamtbetrag %}money{% endif %}">
-                  {{ b.gesamtbetrag | betrag(b.waehrung or 'EUR') if b.gesamtbetrag else '–' }}
-                </div>
-                <div class="beleg-datum">{{ b.datum | datum_de }}</div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <div class="empty-state small">
-          <span>🧾</span>
-          <p>Noch keine Belege gespeichert</p>
-          <p class="hint">Starte mit <code>python stash.py foto meinbeleg.jpg</code></p>
-        </div>
-      {% endif %}
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <h3>Keine Belege in {{ current_month | monat_de }}</h3>
+      <p>Scannen Sie Belege mit der CLI oder über Ihre E-Mails.</p>
+      <p class="hint">
+        <a href="?monat={{ prev_month }}" style="color:var(--green-dark);">← {{ prev_month | monat_de }} anzeigen</a>
+      </p>
     </div>
   </div>
 
-</div>
+{% endif %}
 
-{% endblock %}
-
-{% block scripts %}
-<script>
-  const labels  = {{ chart_labels | safe }};
-  const data    = {{ chart_data | safe }};
-  const colors  = {{ chart_colors | safe }};
-
-  if (labels.length > 0) {
-    const ctx = document.getElementById('kategorieChart');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          backgroundColor: colors,
-          borderWidth: 2,
-          borderColor: '#fff',
-          hoverBorderWidth: 3,
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        cutout: '65%',
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')} EUR`,
-            },
-          },
-        },
-      },
-    });
-  }
-</script>
 {% endblock %}
