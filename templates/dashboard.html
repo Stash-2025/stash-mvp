@@ -1,17 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-
-{% block head %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-{% endblock %}
+{% block title %}Übersicht{% endblock %}
 
 {% block content %}
 
-<!-- Page Header -->
-<div class="page-header">
+<!-- Greeting row -->
+<div class="dash-top">
   <div>
     <h1 class="page-title">{{ gruss }}, {{ vorname }}.</h1>
-    <p class="page-sub">{{ current_month | monat_de }}</p>
+    <p class="page-sub">Ihre Ausgaben auf einen Blick</p>
   </div>
   <a href="{{ url_for('belege_liste') }}" class="btn btn-secondary btn-sm">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -22,203 +18,151 @@
   </a>
 </div>
 
-<!-- ═══ KPI Cards ════════════════════════════════════════════════ -->
-<div class="stats-grid">
+<!-- ═══ Hero Summary Card ═══════════════════════════════════════ -->
+<div class="summary-card">
 
-  <div class="stat-card">
-    <div class="stat-label">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="1" x2="12" y2="23"/>
-        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+  <!-- Month Navigation -->
+  <div class="month-nav">
+    <a href="?monat={{ prev_month }}" class="month-nav-btn" aria-label="Vormonat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
       </svg>
-      Ausgaben diesen Monat
-    </div>
-    <div class="stat-value money">
-      {{ summary_month.gesamt | betrag }}
-      <span style="font-size:1rem;font-weight:500;color:var(--green-xdark);">CHF</span>
-    </div>
-    <div class="stat-sub">{{ summary_month.anzahl }} Beleg{{ 'e' if summary_month.anzahl != 1 else '' }} erfasst</div>
+    </a>
+    <span class="month-nav-label">{{ current_month | monat_de }}</span>
+    <a href="?monat={{ next_month }}"
+       class="month-nav-btn {% if is_current_month %}disabled{% endif %}"
+       aria-label="Nächster Monat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </a>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-label">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="18" height="18" rx="2"/>
-        <path d="M3 9h18"/>
-        <path d="M9 21V9"/>
-      </svg>
-      Gesamtausgaben
-    </div>
-    <div class="stat-value accent">
-      {{ summary_all.gesamt | betrag }}
-      <span style="font-size:1rem;font-weight:500;color:var(--text-muted);">CHF</span>
-    </div>
-    <div class="stat-sub">{{ summary_all.anzahl }} Beleg{{ 'e' if summary_all.anzahl != 1 else '' }} insgesamt</div>
+  <!-- Total Amount -->
+  <div class="summary-amount-row">
+    <span class="summary-currency">CHF</span>
+    <span class="summary-amount">{{ summary_month.gesamt | betrag_zahl if summary_month.gesamt else '0,00' }}</span>
   </div>
+  <div class="summary-label">Ausgaben {{ current_month | monat_de }}</div>
 
-  <div class="stat-card">
-    <div class="stat-label">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-      </svg>
-      Kategorien
+  <!-- Stats Row -->
+  <div class="summary-stats">
+    <div class="summary-stat">
+      <span class="summary-stat-value">{{ summary_month.anzahl }}</span>
+      <span class="summary-stat-label">Belege erfasst</span>
     </div>
-    <div class="stat-value accent">{{ summary_month.nach_kategorie | length }}</div>
-    <div class="stat-sub">aktive Kategorien diesen Monat</div>
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      {% if change_pct is not none %}
+        <span class="summary-stat-value {% if change_pct > 0 %}stat-up{% elif change_pct < 0 %}stat-down{% endif %}">
+          {% if change_pct > 0 %}+{% endif %}{{ change_pct | round(1) }}%
+        </span>
+      {% else %}
+        <span class="summary-stat-value">–</span>
+      {% endif %}
+      <span class="summary-stat-label">vs. Vormonat</span>
+    </div>
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      <span class="summary-stat-value">
+        {% if avg_per_beleg %}CHF {{ avg_per_beleg | betrag_zahl }}{% else %}–{% endif %}
+      </span>
+      <span class="summary-stat-label">Ø pro Beleg</span>
+    </div>
+    {% if summary_month.nach_kategorie %}
+    <div class="summary-stat-sep"></div>
+    <div class="summary-stat">
+      <span class="summary-stat-value">{{ summary_month.nach_kategorie | length }}</span>
+      <span class="summary-stat-label">Kategorien</span>
+    </div>
+    {% endif %}
   </div>
 
 </div>
 
-<!-- ═══ Main Content ════════════════════════════════════════════ -->
-<div class="dashboard-grid">
+<!-- ═══ Transaction List ═════════════════════════════════════════ -->
 
-  <!-- Kategorie-Chart -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Nach Kategorie</span>
-      <span class="card-badge">{{ current_month | monat_de }}</span>
-    </div>
-    <div class="card-body">
-      {% if summary_month.nach_kategorie %}
-        <div class="chart-container">
-          <canvas id="kategorieChart"></canvas>
+{% if grouped_tx %}
+
+  <div class="tx-list-card">
+    {% for group in grouped_tx %}
+
+    <div class="tx-section">
+      <div class="tx-date-header">
+        {{ group.date | tx_date_label }}
+        <span class="tx-date-sub">
+          {% set group_total = namespace(v=0) %}
+          {% for b in group.belege %}{% if b.gesamtbetrag %}{% set group_total.v = group_total.v + b.gesamtbetrag %}{% endif %}{% endfor %}
+          {% if group_total.v %}CHF {{ group_total.v | betrag_zahl }}{% endif %}
+        </span>
+      </div>
+
+      {% for b in group.belege %}
+      <a href="{{ url_for('beleg_detail', beleg_id=b.id) }}" class="tx-row">
+
+        <!-- Merchant Avatar -->
+        <div class="merchant-avatar" style="background: {{ b.haendler | merchant_color }}">
+          {{ b.haendler | merchant_initial }}
         </div>
-        <div class="kategorie-list">
-          {% for k in summary_month.nach_kategorie %}
-          <div class="kategorie-row">
-            <span class="kategorie-dot" style="background:{{ loop.index0 | kategorie_color }}"></span>
-            <span class="kategorie-name">{{ k.kategorie or 'Sonstiges' }}</span>
-            <span class="kategorie-betrag">{{ k.gesamt | betrag }}</span>
+
+        <!-- Info -->
+        <div class="tx-info">
+          <div class="tx-haendler">{{ b.haendler or 'Unbekannter Händler' }}</div>
+          <div class="tx-meta">
+            {% if b.kategorie %}
+            <span class="tx-kat-tag">{{ b.kategorie }}</span>
+            {% endif %}
+            <span class="tx-quelle">
+              {% if b.quelle == 'email' %}per E-Mail
+              {% elif b.quelle == 'pdf' %}PDF
+              {% else %}Foto{% endif %}
+            </span>
           </div>
-          {% endfor %}
         </div>
-      {% else %}
-        <div class="empty-state small">
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+
+        <!-- Amount -->
+        <div class="tx-right">
+          <div class="tx-betrag">
+            {% if b.gesamtbetrag %}
+              –{{ b.gesamtbetrag | betrag_zahl }}
+              <span class="tx-waehrung">{{ b.waehrung or 'CHF' }}</span>
+            {% else %}
+              <span class="tx-betrag-unbekannt">–</span>
+            {% endif %}
+          </div>
+          <div class="tx-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
             </svg>
           </div>
-          <h3>Keine Daten</h3>
-          <p>Noch keine Belege diesen Monat</p>
         </div>
-      {% endif %}
+
+      </a>
+      {% endfor %}
+
+    </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
+      <h3>Keine Belege in {{ current_month | monat_de }}</h3>
+      <p>Scannen Sie Belege mit der CLI oder über Ihre E-Mails.</p>
+      <p class="hint">
+        <a href="?monat={{ prev_month }}" style="color:var(--green-dark);">← {{ prev_month | monat_de }} anzeigen</a>
+      </p>
     </div>
   </div>
 
-  <!-- Letzte Belege -->
-  <div class="card">
-    <div class="card-header">
-      <span class="card-title">Zuletzt erfasst</span>
-      <a href="{{ url_for('belege_liste') }}" class="card-link">Alle anzeigen</a>
-    </div>
-    <div class="card-body no-padding">
-      {% if recent %}
-        <table class="table">
-          <tbody>
-            {% for b in recent %}
-            <tr class="clickable" onclick="location.href='{{ url_for('beleg_detail', beleg_id=b.id) }}'">
-              <td>
-                <div class="beleg-row-main">
-                  <div class="source-icon">
-                    {% if b.quelle == 'email' %}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                      <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                    {% elif b.quelle == 'pdf' %}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    {% else %}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                      <rect x="3" y="3" width="18" height="18" rx="2"/>
-                      <circle cx="8.5" cy="8.5" r="1.5"/>
-                      <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                    {% endif %}
-                  </div>
-                  <div>
-                    <div class="beleg-haendler">{{ b.haendler or '–' }}</div>
-                    <div class="beleg-kategorie">{{ b.kategorie or '–' }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="text-right">
-                <div class="beleg-betrag {% if b.gesamtbetrag %}money{% endif %}">
-                  {% if b.gesamtbetrag %}{{ b.gesamtbetrag | betrag }} {{ b.waehrung or 'CHF' }}{% else %}–{% endif %}
-                </div>
-                <div class="beleg-datum">{{ b.datum | datum_de }}</div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% else %}
-        <div class="empty-state small">
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <h3>Keine Belege</h3>
-          <p>Noch keine Belege gespeichert</p>
-          <p class="hint">Starte mit <code>python stash.py foto kassenbon.jpg</code></p>
-        </div>
-      {% endif %}
-    </div>
-  </div>
+{% endif %}
 
-</div>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-const labels = {{ chart_labels | safe }};
-const data   = {{ chart_data   | safe }};
-const colors = {{ chart_colors | safe }};
-
-if (labels.length > 0) {
-  new Chart(document.getElementById('kategorieChart'), {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors,
-        borderWidth: 2,
-        borderColor: '#fff',
-        hoverBorderWidth: 3,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      cutout: '70%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0A1628',
-          titleColor: '#fff',
-          bodyColor: '#94A3B8',
-          padding: 10,
-          cornerRadius: 6,
-          callbacks: {
-            label: ctx => {
-              const val = ctx.parsed.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-              return ` ${ctx.label}: CHF ${val}`;
-            },
-          },
-        },
-      },
-    },
-  });
-}
-</script>
 {% endblock %}

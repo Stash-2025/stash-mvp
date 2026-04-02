@@ -12,7 +12,8 @@ Erster Start – Konto erstellen:
 
 import json
 import os
-from datetime import datetime
+from collections import defaultdict
+from datetime import date, datetime, timedelta
 from functools import wraps
 
 from dotenv import load_dotenv
@@ -109,6 +110,77 @@ def kategorie_color(index: int) -> str:
         "#344054", "#027A48",
     ]
     return palette[index % len(palette)]
+
+
+@app.template_filter("betrag_zahl")
+def fmt_betrag_zahl(value) -> str:
+    """Nur die Zahl formatiert (ohne Währung), Swiss-Stil: 1'234,50"""
+    if value is None:
+        return "–"
+    return f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "'")
+
+
+@app.template_filter("merchant_initial")
+def fmt_merchant_initial(value: str | None) -> str:
+    """'Migros' → 'Mi', 'Coop Pronto' → 'CP'"""
+    if not value:
+        return "?"
+    words = str(value).strip().split()
+    if len(words) >= 2:
+        return (words[0][0] + words[1][0]).upper()
+    return str(value)[:2].upper()
+
+
+@app.template_filter("merchant_color")
+def fmt_merchant_color(value: str | None) -> str:
+    """Konsistente Avatar-Farbe je Händlername (hash-basiert)."""
+    palette = [
+        "#1DB584", "#175CD3", "#B54708", "#C01048", "#6941C6",
+        "#0E7090", "#067647", "#B93815", "#3538CD", "#026AA2",
+    ]
+    if not value:
+        return palette[0]
+    idx = sum(ord(c) for c in str(value)) % len(palette)
+    return palette[idx]
+
+
+@app.template_filter("tx_date_label")
+def fmt_tx_date_label(value: str | None) -> str:
+    """'2025-04-15' → 'Heute' / 'Gestern' / 'Dienstag, 15. April'"""
+    if not value:
+        return "Unbekannt"
+    try:
+        d = datetime.strptime(value[:10], "%Y-%m-%d").date()
+        today = date.today()
+        if d == today:
+            return "Heute"
+        if d == today - timedelta(days=1):
+            return "Gestern"
+        weekdays = ["Montag", "Dienstag", "Mittwoch", "Donnerstag",
+                    "Freitag", "Samstag", "Sonntag"]
+        monate   = ["", "Januar", "Februar", "März", "April", "Mai", "Juni",
+                    "Juli", "August", "September", "Oktober", "November", "Dezember"]
+        return f"{weekdays[d.weekday()]}, {d.day}. {monate[d.month]}"
+    except Exception:
+        return value
+
+
+# ─── Monats-Helfer ───────────────────────────────────────────────
+
+def _prev_month(ym: str) -> str:
+    try:
+        dt = datetime.strptime(ym, "%Y-%m")
+        return f"{dt.year - 1}-12" if dt.month == 1 else f"{dt.year}-{dt.month - 1:02d}"
+    except Exception:
+        return ym
+
+
+def _next_month(ym: str) -> str:
+    try:
+        dt = datetime.strptime(ym, "%Y-%m")
+        return f"{dt.year + 1}-01" if dt.month == 12 else f"{dt.year}-{dt.month + 1:02d}"
+    except Exception:
+        return ym
 
 
 # ─── Tagesgruss ──────────────────────────────────────────────────
@@ -280,12 +352,60 @@ def passwort_vergessen():
 @app.route("/")
 @login_required
 def dashboard():
-    current_month = datetime.now().strftime("%Y-%m")
+    today         = datetime.now()
+    actual_month  = today.strftime("%Y-%m")
+    selected_month = request.args.get("monat") or actual_month
     uid = current_user.id
 
-    summary_month = db.get_zusammenfassung(monat=current_month, user_id=uid)
-    summary_all   = db.get_zusammenfassung(user_id=uid)
-    recent        = db.get_belege(limit=6, user_id=uid)
+    summary_month = db.get_zusammenfassung(monat=selected_month, user_id=uid)
+    summary_prev  = db.get_zusammenfassung(monat=_prev_month(selected_month), user_id=uid)
+
+    # Prozentuale Änderung zum Vormonat
+    prev_total    = summary_prev.get("gesamt") or 0
+    curr_total    = summary_month.get("gesamt") or 0
+    if prev_total and prev_total != 0:
+        change_pct = ((curr_total - prev_total) / prev_total) * 100
+    else:
+        change_pct = None
+
+    # Durchschnitt pro Beleg
+    anzahl = summary_month.get("anzahl") or 0
+    avg_per_beleg = (curr_total / anzahl) if anzahl else None
+
+    # Alle Belege des Monats, nach Datum gruppiert
+    all_belege = db.get_belege(limit=500, user_id=uid, monat=selected_month)
+    groups: dict[str, list] = defaultdict(list)
+    for b in all_belege:
+        key = (b.get("datum") or b.get("erstellt_am", "")[:10] or "0000-00-00")[:10]
+        groups[key].append(b)
+    grouped_tx = [{"date": d, "belege": groups[d]} for d in sorted(groups.keys(), reverse=True)]
+
+    prev_month = _prev_month(selected_month)
+    next_month = _next_month(selected_month)
+
+    return render_template(
+        "dashboard.html",
+        gruss=tagesgruss(),
+        vorname=current_user.vorname,
+        summary_month=summary_month,
+        current_month=selected_month,
+        grouped_tx=grouped_tx,
+        prev_month=prev_month,
+        next_month=next_month,
+        is_current_month=(selected_month == actual_month),
+        change_pct=change_pct,
+        avg_per_beleg=avg_per_beleg,
+    )
+
+
+# ─── Reports ──────────────────────────────────────────────────────
+
+@app.route("/reports")
+@login_required
+def reports():
+    uid = current_user.id
+    summary_all = db.get_zusammenfassung(user_id=uid)
+    alle_monate = db.get_alle_monate_for_user(uid)
 
     chart_labels = []
     chart_data   = []
@@ -294,18 +414,14 @@ def dashboard():
         "#0E7090", "#067647", "#B93815", "#3538CD", "#026AA2",
         "#344054", "#027A48",
     ]
-    for k in summary_month["nach_kategorie"][:10]:
+    for k in summary_all["nach_kategorie"][:10]:
         chart_labels.append(k["kategorie"] or "Sonstiges")
         chart_data.append(round(k["gesamt"] or 0, 2))
 
     return render_template(
-        "dashboard.html",
-        gruss=tagesgruss(),
-        vorname=current_user.vorname,
-        summary_month=summary_month,
+        "reports.html",
         summary_all=summary_all,
-        recent=recent,
-        current_month=current_month,
+        alle_monate=alle_monate,
         chart_labels=json.dumps(chart_labels),
         chart_data=json.dumps(chart_data),
         chart_colors=json.dumps(chart_colors[: len(chart_labels)]),
