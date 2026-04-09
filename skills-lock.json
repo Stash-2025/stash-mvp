@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "caveman": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "computedHash": "76ebe665f225f9874aa53648747e2027238d67f7d50fcddd2644d3742e9cb685"
+    },
+    "caveman-commit": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "computedHash": "4911978abc2c8e731f1142cae0dc1e9011137bb5da7d368059510965c0add2d5"
+    },
+    "caveman-review": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "computedHash": "db3c51874c89b161ace6d15e8387022862aab2bdf36fa05a07f928d7b139a52f"
+    },
+    "compress": {
+      "source": "JuliusBrussee/caveman",
+      "sourceType": "github",
+      "computedHash": "2fb5ecec2f71badbd51cdc0ad4a5a4887fd98c2bb36c24f1adcbbeb57f9f1851"
+    }
+  }
+}
