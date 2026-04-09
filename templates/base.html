@@ -18,19 +18,15 @@
   <aside class="sidebar">
 
     <!-- Brand -->
-    <div class="sidebar-logo">
+    <a href="{{ url_for('landing') }}" class="sidebar-logo" style="text-decoration:none;">
       <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
+        {% include '_logo.html' %}
       </div>
       <div>
         <div class="logo-text">Stash</div>
         <div class="logo-version">Belegverwaltung</div>
       </div>
-    </div>
+    </a>
 
     <!-- Navigation -->
     <nav class="sidebar-nav">

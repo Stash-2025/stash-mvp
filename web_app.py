@@ -195,18 +195,36 @@ def tagesgruss() -> str:
         return "Guten Abend"
 
 
+# ─── Startseite (Landing) ─────────────────────────────────────────
+
+@app.route("/start")
+def landing():
+    """Öffentliche Marketingseite. Eingeloggte Benutzer → Dashboard."""
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+    return render_template("landing.html")
+
+
 # ─── Erster Start: Setup ─────────────────────────────────────────
 
 @app.before_request
 def check_setup():
     """Leitet beim ersten Start zur Einrichtungsseite weiter."""
-    public = {"setup", "static", "login"}
+    public = {"setup", "static", "login", "landing"}
     if request.endpoint and request.endpoint not in public:
         if db.user_count() == 0:
             return redirect(url_for("setup"))
 
 
 # ─── Auth: Login / Logout ─────────────────────────────────────────
+
+@app.route("/")
+def index():
+    """Root: eingeloggte Benutzer → Dashboard, sonst → Landing."""
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+    return redirect(url_for("landing"))
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -349,7 +367,7 @@ def passwort_vergessen():
 
 # ─── Dashboard ────────────────────────────────────────────────────
 
-@app.route("/")
+@app.route("/dashboard")
 @login_required
 def dashboard():
     today         = datetime.now()

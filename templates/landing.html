@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stash – Ihre Belege. Automatisch erfasst.</title>
+  <meta name="description" content="Stash liest Kassenbons per E-Mail, PDF oder Foto – analysiert mit KI und zeigt Ihre Ausgaben wie im Swiss E-Banking. Lokal. Sicher. Intelligent." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════════════════ -->
+<nav class="lp-nav">
+  <a href="{{ url_for('landing') }}" class="lp-nav-brand">
+    <div class="lp-logo-mark">
+      {% include '_logo.html' %}
+    </div>
+    <span class="lp-brand-name">Stash</span>
+  </a>
+  <div class="lp-nav-actions">
+    <a href="#how-it-works" class="lp-btn-ghost">So funktioniert's</a>
+    <a href="{{ url_for('login') }}" class="lp-btn-primary">Anmelden</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- Left: copy -->
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        KI-gestützte Belegerfassung
+      </div>
+
+      <h1 class="hero-headline">
+        Ihre Belege.<br>
+        <em>Automatisch</em><br>
+        erfasst.
+      </h1>
+
+      <p class="hero-sub">
+        Stash liest Kassenbons per E-Mail, PDF oder Foto –
+        analysiert sie mit KI und zeigt Ihre Ausgaben in einem
+        Swiss-Banking-Dashboard. Lokal gespeichert. Kein Cloud-Zwang.
+      </p>
+
+      <div class="hero-actions">
+        <a href="{{ url_for('login') }}" class="hero-cta-primary">
+          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Jetzt starten
+        </a>
+        <a href="#how-it-works" class="hero-cta-ghost">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Wie es funktioniert
+        </a>
+      </div>
+
+      <div class="hero-trust">
+        <div class="hero-trust-item">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Lokal gespeichert
+        </div>
+        <div class="hero-trust-item">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Swiss Made
+        </div>
+        <div class="hero-trust-item">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Open Source
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Dashboard Mockup -->
+    <div class="hero-mockup">
+      <div class="mockup-frame">
+
+        <!-- Browser chrome -->
+        <div class="mockup-chrome">
+          <span class="mockup-dot red"></span>
+          <span class="mockup-dot amber"></span>
+          <span class="mockup-dot green"></span>
+          <div class="mockup-url">localhost:5000</div>
+        </div>
+
+        <!-- App body -->
+        <div class="mockup-body">
+
+          <!-- Mini sidebar -->
+          <div class="mockup-sidebar">
+            <div class="mockup-sidebar-item active">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            </div>
+            <div class="mockup-sidebar-item">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="mockup-sidebar-item">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div class="mockup-sidebar-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </div>
+          </div>
+
+          <!-- Main content -->
+          <div class="mockup-content">
+
+            <!-- Summary card -->
+            <div class="mockup-card">
+              <div class="mockup-month-nav">
+                <div class="mockup-month-btn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+                <span class="mockup-month-label">April 2025</span>
+                <div class="mockup-month-btn"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </div>
+              <div class="mockup-amount"><span>CHF</span>3'847,90</div>
+              <div class="mockup-amount-sub">Ausgaben April 2025</div>
+              <div class="mockup-stats">
+                <div><div class="mockup-stat-val">12</div><div class="mockup-stat-lbl">Belege</div></div>
+                <div><div class="mockup-stat-val" style="color:#FDA29B;">+8.4%</div><div class="mockup-stat-lbl">vs. Vormonat</div></div>
+                <div><div class="mockup-stat-val">320,65</div><div class="mockup-stat-lbl">Ø pro Beleg</div></div>
+              </div>
+            </div>
+
+            <!-- Transaction list -->
+            <div class="mockup-tx-header">Heute</div>
+
+            <div class="mockup-tx-row">
+              <div class="mockup-tx-avatar" style="background:#1DB584;">Mi</div>
+              <span class="mockup-tx-name">Migros</span>
+              <span class="mockup-tx-tag">Lebensmittel</span>
+              <span class="mockup-tx-amount">–84,50</span>
+            </div>
+
+            <div class="mockup-tx-row">
+              <div class="mockup-tx-avatar" style="background:#175CD3;">SB</div>
+              <span class="mockup-tx-name">SBB</span>
+              <span class="mockup-tx-tag">Transport</span>
+              <span class="mockup-tx-amount">–42,00</span>
+            </div>
+
+            <div class="mockup-tx-row">
+              <div class="mockup-tx-avatar" style="background:#B54708;">Am</div>
+              <span class="mockup-tx-name">Amazon</span>
+              <span class="mockup-tx-tag">Online</span>
+              <span class="mockup-tx-amount">–129,90</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TRUST STRIP
+═══════════════════════════════════════════════════════════ -->
+<div class="trust-strip">
+  <div class="trust-strip-inner">
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Ende-zu-Ende verschlüsselt
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Lokale SQLite-Datenbank
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      KI-gestützte Analyse
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Swiss Made
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURES
+═══════════════════════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="section-header">
+    <div class="section-label">Funktionen</div>
+    <h2 class="section-title">Alles was Sie brauchen.<br>Nichts was Sie nicht brauchen.</h2>
+    <p class="section-sub">
+      Stash fokussiert auf das Wesentliche: Belege automatisch erfassen,
+      intelligent kategorisieren und übersichtlich darstellen.
+    </p>
+  </div>
+
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </div>
+      <div class="feature-title">E-Mail Integration</div>
+      <p class="feature-text">
+        Weitergeleitete oder automatisch abgeholte E-Mails werden geparst.
+        Anhänge (PDF, Bilder) werden direkt analysiert – ohne manuellen Aufwand.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="feature-title">Swiss E-Banking Design</div>
+      <p class="feature-text">
+        Dashboard wie BEKB oder Raiffeisen: Monatsübersicht, Transaktionsliste
+        mit Händler-Avataren, Kategorietags und CHF-Beträgen.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div class="feature-title">KI-Analyse (Claude Vision)</div>
+      <p class="feature-text">
+        Händlername, Datum, Gesamtbetrag, Mehrwertsteuer und Kategorie
+        werden automatisch erkannt – auch aus Fotos und PDFs.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="feature-title">Lokal & Sicher</div>
+      <p class="feature-text">
+        Alle Daten werden in einer lokalen SQLite-Datenbank gespeichert.
+        Kein Cloud-Server, kein Abo, keine Datenweitergabe.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOW IT WORKS
+═══════════════════════════════════════════════════════════ -->
+<section class="section" id="how-it-works">
+  <div class="section-header center">
+    <div class="section-label">So funktioniert's</div>
+    <h2 class="section-title">Drei Schritte. Fertig.</h2>
+    <p class="section-sub">
+      Von der Kassenquittung zur strukturierten Ausgabenübersicht –
+      vollautomatisch.
+    </p>
+  </div>
+
+  <div class="steps-grid">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <div class="step-title">Beleg erfassen</div>
+      <p class="step-text">
+        Leiten Sie eine Quittungs-E-Mail weiter, scannen Sie ein Foto
+        oder laden Sie ein PDF hoch. Stash liest alles automatisch aus.
+      </p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="step-title">KI analysiert</div>
+      <p class="step-text">
+        Claude Vision erkennt Händler, Betrag, Datum, Kategorie und
+        Mehrwertsteuer – zuverlässig, auch bei handschriftlichen Belegen.
+      </p>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      </div>
+      <div class="step-title">Übersicht anzeigen</div>
+      <p class="step-text">
+        Alle Belege erscheinen im Dashboard – gruppiert nach Monat,
+        kategorisiert, mit Monatsvergleich und Auswertungsgrafiken.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     PRIVACY SECTION
+═══════════════════════════════════════════════════════════ -->
+<section class="section section-dark">
+  <div class="privacy-grid">
+
+    <!-- Left: text -->
+    <div>
+      <div class="section-label">Datenschutz</div>
+      <h2 class="section-title section-title-white">Alles bleibt<br>bei Ihnen.</h2>
+      <p class="section-sub section-sub-white">
+        Stash ist kein SaaS. Keine Server, keine Accounts in der Cloud,
+        kein Tracking. Ihre Finanzdaten gehören Ihnen.
+      </p>
+
+      <div class="privacy-list">
+        <div class="privacy-item">
+          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div>
+            <div class="privacy-item-title">Lokale SQLite-Datenbank</div>
+            <div class="privacy-item-text">Alle Belege werden in <code style="background:rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:4px;font-size:.8em;">~/.stash/belege.db</code> gespeichert – nur auf Ihrem Rechner.</div>
+          </div>
+        </div>
+        <div class="privacy-item">
+          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div>
+            <div class="privacy-item-title">Kein Cloud-Zwang</div>
+            <div class="privacy-item-text">Das Dashboard läuft auf localhost. Kein Konto bei einem Drittanbieter nötig.</div>
+          </div>
+        </div>
+        <div class="privacy-item">
+          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div>
+            <div class="privacy-item-title">Mehrbenutzer-Isolation</div>
+            <div class="privacy-item-text">Mehrere Benutzer auf demselben Rechner sehen nur ihre eigenen Belege.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: visual -->
+    <div class="privacy-visual">
+      <div class="privacy-visual-row">
+        <div class="privacy-visual-icon green">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="privacy-visual-title">Verschlüsselte Verbindung</div>
+          <div class="privacy-visual-sub">HTTPS · Lokale Flask-Session</div>
+        </div>
+      </div>
+      <div class="privacy-visual-row">
+        <div class="privacy-visual-icon blue">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div>
+          <div class="privacy-visual-title">SQLite auf Ihrem Gerät</div>
+          <div class="privacy-visual-sub">~/.stash/belege.db · Kein Upload</div>
+        </div>
+      </div>
+      <div class="privacy-visual-row">
+        <div class="privacy-visual-icon amber">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <div class="privacy-visual-title">Benutzer-Isolation</div>
+          <div class="privacy-visual-sub">Jeder Benutzer sieht nur seine Daten</div>
+        </div>
+      </div>
+      <div class="privacy-visual-row">
+        <div class="privacy-visual-icon green">
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <div>
+          <div class="privacy-visual-title">Open Source</div>
+          <div class="privacy-visual-sub">Vollständig prüfbarer Code</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FINAL CTA
+═══════════════════════════════════════════════════════════ -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2 class="cta-title">Bereit, Ihre Belege<br>in Griff zu bekommen?</h2>
+    <p class="cta-sub">
+      Stash einrichten dauert weniger als 5 Minuten.
+      Lokal, kostenlos, ohne Cloud-Konto.
+    </p>
+    <a href="{{ url_for('login') }}" class="cta-btn">
+      <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Jetzt starten
+    </a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════════════════ -->
+<footer class="lp-footer">
+  <div class="lp-footer-brand">
+    <div class="lp-logo-mark" style="width:28px;height:28px;border-radius:6px;">
+      {% include '_logo.html' %}
+    </div>
+    <div>
+      <div class="lp-footer-brand-name">Stash</div>
+      <div class="lp-footer-copy">© 2025 Stash · Persönliche Belegverwaltung</div>
+    </div>
+  </div>
+
+  <div class="lp-footer-links">
+    <a href="{{ url_for('login') }}" class="lp-footer-link">Anmelden</a>
+    <a href="#" class="lp-footer-link">Datenschutz</a>
+  </div>
+
+  <div class="lp-footer-badge">
+    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Swiss Made · Lokal · KI-gestützt
+  </div>
+</footer>
+
+</body>
+</html>

@@ -15,13 +15,9 @@
 
     <!-- Brand -->
     <div class="login-brand">
-      <div class="login-logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
-      </div>
+      <a href="{{ url_for('landing') }}" class="login-logo-mark" style="display:flex;align-items:center;justify-content:center;">
+        {% include '_logo.html' %}
+      </a>
       <div class="login-app-name">Stash</div>
       <div class="login-tagline">Persönliche Belegverwaltung</div>
     </div>
