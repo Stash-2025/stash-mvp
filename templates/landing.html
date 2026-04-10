@@ -1,66 +1,75 @@
+<!--
+  Stash – Öffentliche Startseite
+  Design: Premium Swiss Fintech · "Website aus der Zukunft"
+  Sektionen: Hero · Trust · Warum Stash · Wie es funktioniert · Features · Mission · FAQ · CTA · Footer
+-->
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stash – Ihre Belege. Automatisch erfasst.</title>
-  <meta name="description" content="Stash liest Kassenbons per E-Mail, PDF oder Foto – analysiert mit KI und zeigt Ihre Ausgaben wie im Swiss E-Banking. Lokal. Sicher. Intelligent." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stash – Deine Belege. Digital. Einfach. Überall.</title>
+  <meta name="description" content="Stash ist die intelligente Belegverwaltung für die Schweiz. Quittungen per E-Mail, Foto oder PDF – automatisch erfasst und analysiert."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800;9..40,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}"/>
 </head>
 <body>
 
 <!-- ══════════════════════════════════════════════════════════
      NAVBAR
-═══════════════════════════════════════════════════════════ -->
-<nav class="lp-nav">
-  <a href="{{ url_for('landing') }}" class="lp-nav-brand">
-    <div class="lp-logo-mark">
-      {% include '_logo.html' %}
-    </div>
-    <span class="lp-brand-name">Stash</span>
+══════════════════════════════════════════════════════════ -->
+<nav class="nav" id="nav">
+  <a href="{{ url_for('landing') }}" class="nav-brand">
+    <div class="nav-logo-wrap">{% include '_logo.html' %}</div>
+    <span class="nav-brand-name">Stash</span>
   </a>
-  <div class="lp-nav-actions">
-    <a href="#how-it-works" class="lp-btn-ghost">So funktioniert's</a>
-    <a href="{{ url_for('login') }}" class="lp-btn-primary">Anmelden</a>
+
+  <div class="nav-links">
+    <a href="#warum" class="nav-link">Warum Stash?</a>
+    <a href="#how" class="nav-link">So funktioniert's</a>
+    <a href="#faq" class="nav-link">FAQ</a>
   </div>
+
+  <a href="{{ url_for('login') }}" class="nav-cta">Anmeldung</a>
 </nav>
 
 <!-- ══════════════════════════════════════════════════════════
      HERO
-═══════════════════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <section class="hero">
-  <div class="hero-inner">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
 
-    <!-- Left: copy -->
-    <div class="hero-text">
+  <div class="wrap hero-inner">
+
+    <!-- Left: Copy -->
+    <div class="hero-left">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-        KI-gestützte Belegerfassung
+        Der digitale Belegstandard von morgen
       </div>
 
-      <h1 class="hero-headline">
-        Ihre Belege.<br>
-        <em>Automatisch</em><br>
-        erfasst.
+      <h1 class="hero-h1">
+        Deine Belege.<br>
+        <span class="green">Digital. Einfach.</span><br>
+        Überall.
       </h1>
 
       <p class="hero-sub">
-        Stash liest Kassenbons per E-Mail, PDF oder Foto –
-        analysiert sie mit KI und zeigt Ihre Ausgaben in einem
-        Swiss-Banking-Dashboard. Lokal gespeichert. Kein Cloud-Zwang.
+        Stash ist die neutrale Schnittstelle zwischen Kassensystemen und Verbrauchern. Wir fangen Quittungen per E-Mail, Foto oder PDF ab, analysieren sie mit KI und machen sie in einer App übersichtlich nutzbar.
       </p>
 
       <div class="hero-actions">
-        <a href="{{ url_for('login') }}" class="hero-cta-primary">
-          <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Jetzt starten
+        <a href="{{ url_for('login') }}" class="btn-hero-primary">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Jetzt Stash testen
         </a>
-        <a href="#how-it-works" class="hero-cta-ghost">
+        <a href="#how" class="btn-hero-ghost">
           <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          Wie es funktioniert
+          So funktioniert's
         </a>
       </div>
 
@@ -74,84 +83,122 @@
           Swiss Made
         </div>
         <div class="hero-trust-item">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Open Source
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          In 5 Min. eingerichtet
         </div>
       </div>
     </div>
 
-    <!-- Right: Dashboard Mockup -->
-    <div class="hero-mockup">
-      <div class="mockup-frame">
+    <!-- Right: Phone Mockup -->
+    <div class="hero-right">
+      <div class="phone-wrap">
+        <div class="phone-glow"></div>
 
-        <!-- Browser chrome -->
-        <div class="mockup-chrome">
-          <span class="mockup-dot red"></span>
-          <span class="mockup-dot amber"></span>
-          <span class="mockup-dot green"></span>
-          <div class="mockup-url">localhost:5000</div>
+        <!-- Floating integration badges -->
+        <div class="phone-badge badge-email">
+          <svg viewBox="0 0 24 24" style="stroke:#3B82F6;width:14px;height:14px">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          per E-Mail
+        </div>
+        <div class="phone-badge badge-photo">
+          <svg viewBox="0 0 24 24" style="stroke:#8B5CF6;width:14px;height:14px">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          per Foto
+        </div>
+        <div class="phone-badge badge-pdf">
+          <svg viewBox="0 0 24 24" style="stroke:#EF4444;width:14px;height:14px">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+          als PDF
         </div>
 
-        <!-- App body -->
-        <div class="mockup-body">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
 
-          <!-- Mini sidebar -->
-          <div class="mockup-sidebar">
-            <div class="mockup-sidebar-item active">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-            </div>
-            <div class="mockup-sidebar-item">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <div class="mockup-sidebar-item">
-              <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            </div>
-            <div class="mockup-sidebar-item">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </div>
-          </div>
-
-          <!-- Main content -->
-          <div class="mockup-content">
-
-            <!-- Summary card -->
-            <div class="mockup-card">
-              <div class="mockup-month-nav">
-                <div class="mockup-month-btn"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
-                <span class="mockup-month-label">April 2025</span>
-                <div class="mockup-month-btn"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <!-- App header -->
+            <div class="app-header">
+              <div class="app-logo">
+                <div class="app-logo-mark">{% include '_logo.html' %}</div>
+                <span class="app-logo-name">Stash</span>
               </div>
-              <div class="mockup-amount"><span>CHF</span>3'847,90</div>
-              <div class="mockup-amount-sub">Ausgaben April 2025</div>
-              <div class="mockup-stats">
-                <div><div class="mockup-stat-val">12</div><div class="mockup-stat-lbl">Belege</div></div>
-                <div><div class="mockup-stat-val" style="color:#FDA29B;">+8.4%</div><div class="mockup-stat-lbl">vs. Vormonat</div></div>
-                <div><div class="mockup-stat-val">320,65</div><div class="mockup-stat-lbl">Ø pro Beleg</div></div>
+              <div class="app-header-dots">
+                <span></span><span></span><span></span>
               </div>
             </div>
 
-            <!-- Transaction list -->
-            <div class="mockup-tx-header">Heute</div>
-
-            <div class="mockup-tx-row">
-              <div class="mockup-tx-avatar" style="background:#1DB584;">Mi</div>
-              <span class="mockup-tx-name">Migros</span>
-              <span class="mockup-tx-tag">Lebensmittel</span>
-              <span class="mockup-tx-amount">–84,50</span>
+            <!-- Tabs -->
+            <div class="app-tabs">
+              <div class="app-tab active">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;margin-right:3px;vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Belege
+              </div>
+              <div class="app-tab inactive">Reports</div>
             </div>
 
-            <div class="mockup-tx-row">
-              <div class="mockup-tx-avatar" style="background:#175CD3;">SB</div>
-              <span class="mockup-tx-name">SBB</span>
-              <span class="mockup-tx-tag">Transport</span>
-              <span class="mockup-tx-amount">–42,00</span>
+            <!-- Transactions -->
+            <div class="app-tx-list">
+              <div class="app-tx-date">Heute</div>
+
+              <div class="app-tx">
+                <div class="app-tx-avatar" style="background:#1DB584;">Mi</div>
+                <div class="app-tx-info">
+                  <div class="app-tx-name">Migros</div>
+                  <div class="app-tx-time">Heute, 14:23</div>
+                </div>
+                <div class="app-tx-amount">67.85 CHF</div>
+              </div>
+
+              <div class="app-tx">
+                <div class="app-tx-avatar" style="background:#0F4C3A;">St</div>
+                <div class="app-tx-info">
+                  <div class="app-tx-name">Starbucks</div>
+                  <div class="app-tx-time">Heute, 10:15</div>
+                </div>
+                <div class="app-tx-amount">12.50 CHF</div>
+              </div>
+
+              <div class="app-tx-date">Gestern</div>
+
+              <div class="app-tx">
+                <div class="app-tx-avatar" style="background:#E63946;">Co</div>
+                <div class="app-tx-info">
+                  <div class="app-tx-name">Coop</div>
+                  <div class="app-tx-time">Gestern, 16:42</div>
+                </div>
+                <div class="app-tx-amount">43.90 CHF</div>
+              </div>
+
+              <div class="app-tx">
+                <div class="app-tx-avatar" style="background:#F4A261;">Mi</div>
+                <div class="app-tx-info">
+                  <div class="app-tx-name">Migrol</div>
+                  <div class="app-tx-time">Gestern, 09:30</div>
+                </div>
+                <div class="app-tx-amount">89.00 CHF</div>
+              </div>
+
+              <div class="app-tx">
+                <div class="app-tx-avatar" style="background:#264653;">De</div>
+                <div class="app-tx-info">
+                  <div class="app-tx-name">Denner</div>
+                  <div class="app-tx-time">12. Jan</div>
+                </div>
+                <div class="app-tx-amount">28.60 CHF</div>
+              </div>
             </div>
 
-            <div class="mockup-tx-row">
-              <div class="mockup-tx-avatar" style="background:#B54708;">Am</div>
-              <span class="mockup-tx-name">Amazon</span>
-              <span class="mockup-tx-tag">Online</span>
-              <span class="mockup-tx-amount">–129,90</span>
+            <!-- Total bar -->
+            <div class="app-total">
+              <div>
+                <div class="app-total-label">Monat Januar</div>
+              </div>
+              <div class="app-total-val">241.85 CHF</div>
             </div>
 
           </div>
@@ -163,272 +210,540 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════
-     TRUST STRIP
-═══════════════════════════════════════════════════════════ -->
-<div class="trust-strip">
-  <div class="trust-strip-inner">
-    <div class="trust-item">
-      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      Ende-zu-Ende verschlüsselt
+     TRUST BAR
+══════════════════════════════════════════════════════════ -->
+<div class="trust-bar">
+  <div class="wrap trust-bar-inner">
+    <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Ende-zu-Ende verschlüsselt</div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Lokale Datenspeicherung</div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> KI-gestützte Analyse</div>
+    <div class="trust-sep"></div>
+    <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Swiss Made
     </div>
     <div class="trust-sep"></div>
-    <div class="trust-item">
-      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Lokale SQLite-Datenbank
-    </div>
-    <div class="trust-sep"></div>
-    <div class="trust-item">
-      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      KI-gestützte Analyse
-    </div>
-    <div class="trust-sep"></div>
-    <div class="trust-item">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      Swiss Made
+    <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> DSGVO-konform</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     STATS COUNTER BAR
+══════════════════════════════════════════════════════════ -->
+<div class="stats-bar">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Eingabequellen</div>
+      </div>
+      <div class="stats-sep"></div>
+      <div class="stat-item">
+        <div class="stat-num">5 Min.</div>
+        <div class="stat-label">Einrichtung</div>
+      </div>
+      <div class="stats-sep"></div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Lokal & DSGVO-sicher</div>
+      </div>
+      <div class="stats-sep"></div>
+      <div class="stat-item">
+        <div class="stat-num">0 CHF</div>
+        <div class="stat-label">Grundkosten</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
+     WARUM STASH?
+══════════════════════════════════════════════════════════ -->
+<section class="section section-alt" id="warum">
+  <div class="wrap">
+    <div class="section-header center">
+      <div class="section-label">Warum Stash?</div>
+      <h2 class="section-title">Drei einfache Gründe,<br>warum Stash die Zukunft digitaler Belege ist</h2>
+    </div>
+
+    <div class="warum-grid">
+
+      <div class="warum-card">
+        <div class="warum-num">1</div>
+        <div class="warum-icon blue">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="warum-title">Universell kompatibel</div>
+        <p class="warum-text">Funktioniert mit jedem Kassensystem – kein Umbau, keine Integration. Wir nutzen die E-Mail-Funktion, die ohnehin schon existiert.</p>
+      </div>
+
+      <div class="warum-card featured">
+        <div class="warum-num">2</div>
+        <div class="warum-badge">Perfekt für dich</div>
+        <div class="warum-icon green">
+          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="warum-title">Einfach &amp; automatisch</div>
+        <p class="warum-text">Du brauchst nur deine persönliche Stash-Adresse (z.&nbsp;B. max@stash.app). Ab dann landen alle Belege automatisch in deiner App.</p>
+        <div class="warum-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Perfekt für dich
+        </div>
+      </div>
+
+      <div class="warum-card">
+        <div class="warum-num">3</div>
+        <div class="warum-icon leaf">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="warum-title">Nachhaltig &amp; zukunftssicher</div>
+        <p class="warum-text">Kein Papier, kein Chaos. Wir schaffen die Infrastruktur für den digitalen Belegstandard von morgen – rechtssicher, revisionsfest und nutzerfreundlich.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SO FUNKTIONIERT'S
+══════════════════════════════════════════════════════════ -->
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-header center">
+      <div class="section-label">So funktioniert Stash</div>
+      <h2 class="section-title">In drei einfachen Schritten<br>zu digitalen Belegen</h2>
+      <p class="section-sub">Ohne Setup, ohne Aufwand – einfach weiterleiten und fertig.</p>
+    </div>
+
+    <!-- Integration flow visual -->
+    <div class="integration-flow">
+      <div class="int-node">
+        <div class="int-icon">
+          <svg viewBox="0 0 24 24" style="stroke:#3B82F6">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <span class="int-label">E-Mail</span>
+      </div>
+
+      <div class="int-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+
+      <div class="int-node">
+        <div class="int-icon">
+          <svg viewBox="0 0 24 24" style="stroke:#8B5CF6">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+        <span class="int-label">Foto</span>
+      </div>
+
+      <div class="int-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+
+      <div class="int-node">
+        <div class="int-icon">
+          <svg viewBox="0 0 24 24" style="stroke:#EF4444">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <span class="int-label">PDF</span>
+      </div>
+
+      <div class="int-arrow" style="color:var(--green)"><svg viewBox="0 0 24 24" style="stroke:var(--green)"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+
+      <div class="int-stash">
+        <div class="int-stash-mark">{% include '_logo.html' %}</div>
+        <div class="int-stash-label">Stash KI</div>
+        <div class="int-stash-sub">analysiert &amp; speichert</div>
+      </div>
+
+      <div class="int-arrow" style="color:var(--green)"><svg viewBox="0 0 24 24" style="stroke:var(--green)"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+
+      <div class="int-node">
+        <div class="int-icon">
+          <svg viewBox="0 0 24 24" style="stroke:var(--green)">
+            <rect x="3" y="3" width="7" height="9" rx="1"/>
+            <rect x="14" y="3" width="7" height="5" rx="1"/>
+            <rect x="14" y="12" width="7" height="9" rx="1"/>
+            <rect x="3" y="16" width="7" height="5" rx="1"/>
+          </svg>
+        </div>
+        <span class="int-label">Dashboard</span>
+      </div>
+    </div>
+
+    <!-- Steps + Visual -->
+    <div class="how-grid">
+
+      <div class="how-steps">
+        <div class="how-step active">
+          <div class="how-step-num">1</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Beim Bezahlen</div>
+            <p class="how-step-text">Du kaufst ganz normal ein – im Laden oder online. Sag einfach: «Quittung per E-Mail an meine Stash-Adresse» (z.&nbsp;B. max@stash.app).</p>
+            <div class="how-tip">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Tipp: Jede Stash-Adresse ist eindeutig deinem Konto zugeordnet.
+            </div>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Stash empfängt &amp; analysiert</div>
+            <p class="how-step-text">Die KI liest Händler, Betrag, Datum und Kategorie automatisch aus – ob als E-Mail, Foto-Anhang oder PDF. Ohne manuelle Eingabe.</p>
+          </div>
+        </div>
+
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-body">
+            <div class="how-step-title">Übersicht im Dashboard</div>
+            <p class="how-step-text">Alle Belege erscheinen sofort in deinem Swiss-Banking-Dashboard – sortiert nach Monat, kategorisiert und mit vollständiger Auswertung.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="how-visual">
+        <div style="font-size:.75rem;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.25rem;">Verarbeitungsstatus</div>
+        <div class="how-flow-diagram">
+
+          <div class="how-flow-item active">
+            <div class="how-flow-icon" style="background:#EFF6FF;">
+              <svg viewBox="0 0 24 24" style="stroke:#3B82F6">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+            </div>
+            <div><div class="how-flow-title">E-Mail empfangen</div><div class="how-flow-sub">migros-quittung@kasse.ch</div></div>
+            <div class="how-flow-status"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+
+          <div class="how-flow-arrow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
+
+          <div class="how-flow-item active">
+            <div class="how-flow-icon" style="background:var(--green-light);">
+              <svg viewBox="0 0 24 24" style="stroke:var(--green)">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <div><div class="how-flow-title">KI-Analyse</div><div class="how-flow-sub">Migros · CHF 67.85 · Lebensmittel</div></div>
+            <div class="how-flow-status"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+
+          <div class="how-flow-arrow"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
+
+          <div class="how-flow-item active">
+            <div class="how-flow-icon" style="background:var(--green-light);">
+              <svg viewBox="0 0 24 24" style="stroke:var(--green)">
+                <rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/>
+                <rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>
+              </svg>
+            </div>
+            <div><div class="how-flow-title">Im Dashboard sichtbar</div><div class="how-flow-sub">Sofort in der Übersicht</div></div>
+            <div class="how-flow-status"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
      FEATURES
-═══════════════════════════════════════════════════════════ -->
-<section class="section section-alt">
-  <div class="section-header">
-    <div class="section-label">Funktionen</div>
-    <h2 class="section-title">Alles was Sie brauchen.<br>Nichts was Sie nicht brauchen.</h2>
-    <p class="section-sub">
-      Stash fokussiert auf das Wesentliche: Belege automatisch erfassen,
-      intelligent kategorisieren und übersichtlich darstellen.
-    </p>
-  </div>
-
-  <div class="features-grid">
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-      </div>
-      <div class="feature-title">E-Mail Integration</div>
-      <p class="feature-text">
-        Weitergeleitete oder automatisch abgeholte E-Mails werden geparst.
-        Anhänge (PDF, Bilder) werden direkt analysiert – ohne manuellen Aufwand.
-      </p>
+══════════════════════════════════════════════════════════ -->
+<section class="section section-mint">
+  <div class="wrap">
+    <div class="section-header center">
+      <div class="section-label">Alles inklusive</div>
+      <h2 class="section-title">Alles was du brauchst.<br>Nichts was du nicht brauchst.</h2>
     </div>
 
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      </div>
-      <div class="feature-title">Swiss E-Banking Design</div>
-      <p class="feature-text">
-        Dashboard wie BEKB oder Raiffeisen: Monatsübersicht, Transaktionsliste
-        mit Händler-Avataren, Kategorietags und CHF-Beträgen.
-      </p>
-    </div>
+    <div class="features-grid">
 
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-      </div>
-      <div class="feature-title">KI-Analyse (Claude Vision)</div>
-      <p class="feature-text">
-        Händlername, Datum, Gesamtbetrag, Mehrwertsteuer und Kategorie
-        werden automatisch erkannt – auch aus Fotos und PDFs.
-      </p>
-    </div>
-
-    <div class="feature-card">
-      <div class="feature-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div class="feature-title">Lokal & Sicher</div>
-      <p class="feature-text">
-        Alle Daten werden in einer lokalen SQLite-Datenbank gespeichert.
-        Kein Cloud-Server, kein Abo, keine Datenweitergabe.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════
-     HOW IT WORKS
-═══════════════════════════════════════════════════════════ -->
-<section class="section" id="how-it-works">
-  <div class="section-header center">
-    <div class="section-label">So funktioniert's</div>
-    <h2 class="section-title">Drei Schritte. Fertig.</h2>
-    <p class="section-sub">
-      Von der Kassenquittung zur strukturierten Ausgabenübersicht –
-      vollautomatisch.
-    </p>
-  </div>
-
-  <div class="steps-grid">
-
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-icon">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      </div>
-      <div class="step-title">Beleg erfassen</div>
-      <p class="step-text">
-        Leiten Sie eine Quittungs-E-Mail weiter, scannen Sie ein Foto
-        oder laden Sie ein PDF hoch. Stash liest alles automatisch aus.
-      </p>
-    </div>
-
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      </div>
-      <div class="step-title">KI analysiert</div>
-      <p class="step-text">
-        Claude Vision erkennt Händler, Betrag, Datum, Kategorie und
-        Mehrwertsteuer – zuverlässig, auch bei handschriftlichen Belegen.
-      </p>
-    </div>
-
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-icon">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
-      </div>
-      <div class="step-title">Übersicht anzeigen</div>
-      <p class="step-text">
-        Alle Belege erscheinen im Dashboard – gruppiert nach Monat,
-        kategorisiert, mit Monatsvergleich und Auswertungsgrafiken.
-      </p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════
-     PRIVACY SECTION
-═══════════════════════════════════════════════════════════ -->
-<section class="section section-dark">
-  <div class="privacy-grid">
-
-    <!-- Left: text -->
-    <div>
-      <div class="section-label">Datenschutz</div>
-      <h2 class="section-title section-title-white">Alles bleibt<br>bei Ihnen.</h2>
-      <p class="section-sub section-sub-white">
-        Stash ist kein SaaS. Keine Server, keine Accounts in der Cloud,
-        kein Tracking. Ihre Finanzdaten gehören Ihnen.
-      </p>
-
-      <div class="privacy-list">
-        <div class="privacy-item">
-          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <div>
-            <div class="privacy-item-title">Lokale SQLite-Datenbank</div>
-            <div class="privacy-item-text">Alle Belege werden in <code style="background:rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:4px;font-size:.8em;">~/.stash/belege.db</code> gespeichert – nur auf Ihrem Rechner.</div>
-          </div>
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </div>
-        <div class="privacy-item">
-          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <div>
-            <div class="privacy-item-title">Kein Cloud-Zwang</div>
-            <div class="privacy-item-text">Das Dashboard läuft auf localhost. Kein Konto bei einem Drittanbieter nötig.</div>
-          </div>
-        </div>
-        <div class="privacy-item">
-          <div class="privacy-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <div>
-            <div class="privacy-item-title">Mehrbenutzer-Isolation</div>
-            <div class="privacy-item-text">Mehrere Benutzer auf demselben Rechner sehen nur ihre eigenen Belege.</div>
-          </div>
-        </div>
+        <div class="feat-title">E-Mail Integration</div>
+        <p class="feat-text">Weiterleitungen oder automatische Abholung per IMAP. Anhänge (PDF, Bilder) werden sofort analysiert.</p>
       </div>
-    </div>
 
-    <!-- Right: visual -->
-    <div class="privacy-visual">
-      <div class="privacy-visual-row">
-        <div class="privacy-visual-icon green">
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div class="feat-title">Foto & Scan</div>
+        <p class="feat-text">Einfach abfotografieren – Claude Vision erkennt Händler, Betrag, Datum und Kategorie automatisch.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="feat-title">PDF-Belege</div>
+        <p class="feat-text">E-Banking-PDFs, Rechnungen, digitale Kassenbons – Stash liest alle gängigen Formate zuverlässig aus.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+        </div>
+        <div class="feat-title">Swiss E-Banking Design</div>
+        <p class="feat-text">Monatsübersicht, Transaktionsliste mit Händler-Avataren, Kategorietags und CHF-Beträgen. Wie Online-Banking – aber für Belege.</p>
+      </div>
+
+      <div class="feat-card">
+        <div class="feat-icon">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <div>
-          <div class="privacy-visual-title">Verschlüsselte Verbindung</div>
-          <div class="privacy-visual-sub">HTTPS · Lokale Flask-Session</div>
-        </div>
+        <div class="feat-title">Lokal & sicher</div>
+        <p class="feat-text">Alle Daten bleiben auf deinem Gerät in einer lokalen SQLite-Datenbank. Kein Cloud-Zwang, kein Abo, keine Datenweitergabe.</p>
       </div>
-      <div class="privacy-visual-row">
-        <div class="privacy-visual-icon blue">
-          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+
+      <div class="feat-card">
+        <div class="feat-icon">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         </div>
-        <div>
-          <div class="privacy-visual-title">SQLite auf Ihrem Gerät</div>
-          <div class="privacy-visual-sub">~/.stash/belege.db · Kein Upload</div>
-        </div>
+        <div class="feat-title">Reports & Auswertungen</div>
+        <p class="feat-text">Kategorien-Analyse, Monatsvergleich, Durchschnitt pro Beleg. Alles mit einem Blick erfassbar.</p>
       </div>
-      <div class="privacy-visual-row">
-        <div class="privacy-visual-icon amber">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <div>
-          <div class="privacy-visual-title">Benutzer-Isolation</div>
-          <div class="privacy-visual-sub">Jeder Benutzer sieht nur seine Daten</div>
-        </div>
-      </div>
-      <div class="privacy-visual-row">
-        <div class="privacy-visual-icon green">
-          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        </div>
-        <div>
-          <div class="privacy-visual-title">Open Source</div>
-          <div class="privacy-visual-sub">Vollständig prüfbarer Code</div>
-        </div>
-      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-header center">
+      <div class="section-label">Was Nutzer sagen</div>
+      <h2 class="section-title">Beleg-Chaos war gestern</h2>
+      <p class="section-sub">Echte Erfahrungen – von Menschen, die Stash täglich nutzen.</p>
     </div>
 
+    <div class="testi-grid">
+
+      <div class="testi-card">
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testi-quote">Ich schicke jede Quittung einfach per Foto weiter – Stash erkennt Migros, Coop, alles. Das Dashboard sieht aus wie mein E-Banking, nur für Belege. Endlich Ordnung.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#1DB584;">LM</div>
+          <div>
+            <div class="testi-name">Lukas M.</div>
+            <div class="testi-role">Selbstständiger Webentwickler, Bern</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testi-quote">Die KI-Analyse ist überraschend präzise – auch bei Kassenbons mit unübersichtlichem Layout. Ich brauche keine manuelle Eingabe mehr. Einfach E-Mail weiterleiten, fertig.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#0A1628;">SR</div>
+          <div>
+            <div class="testi-name">Sandra R.</div>
+            <div class="testi-role">Treuhänderin, Zürich</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <p class="testi-quote">Als Sanitärmeister habe ich keine Zeit für Buchhaltungssoftware. Mit Stash fotografiere ich den Kassenbon und alles ist digital gespeichert. Mein Treuhänder ist begeistert.</p>
+        <div class="testi-author">
+          <div class="testi-avatar" style="background:#3B82F6;">MF</div>
+          <div>
+            <div class="testi-name">Marco F.</div>
+            <div class="testi-role">Sanitärmeister, Thun</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     MISSION
+══════════════════════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="wrap mission">
+    <h2 class="mission-title">Der digitale Belegstandard<br>von morgen</h2>
+    <p class="mission-sub">
+      Wir glauben, dass digitale Belege kein Luxus sind – sondern Standard werden.
+      Mit Stash schaffen wir die Grundlage für eine papierlose, transparente und
+      nachhaltige Konsumwelt.
+    </p>
+    <div class="mission-pill">Einfach. Universell. Zukunftsfähig.</div>
+    <div class="mission-logo">
+      <div class="mission-logo-circle">{% include '_logo.html' %}</div>
+      <div class="mission-logo-name">Stash</div>
+      <div class="mission-logo-tag">Digitale Belege</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════════════════════ -->
+<section class="section" id="faq">
+  <div class="wrap">
+    <div class="section-header center">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Häufige Fragen</h2>
+    </div>
+
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Muss ich ein Kassensystem integrieren oder umrüsten?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Nein. Stash nutzt die E-Mail-Funktion, die bei den meisten Kassensystemen ohnehin vorhanden ist. Einfach die Stash-Adresse als Ziel eintragen – fertig. Kein Umbau, keine API-Integration.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Wo werden meine Daten gespeichert?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Alle Belege werden lokal auf deinem Gerät in einer SQLite-Datenbank gespeichert (<code>~/.stash/belege.db</code>). Keine Cloud, keine externen Server, keine Datenweitergabe. Du behältst die volle Kontrolle.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Welche Formate werden unterstützt?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Stash verarbeitet E-Mails mit Anhängen (PDF, JPEG, PNG, WEBP), direkte Fotos via Upload sowie reine Text-E-Mails mit Betragsangaben. Die KI erkennt auch handgeschriebene oder gedruckte Quittungen zuverlässig.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Was kostet Stash?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Stash ist derzeit kostenlos nutzbar. Da alle Daten lokal gespeichert werden und du deine eigene Claude-API verwendest, entstehen nur die Kosten deiner API-Nutzung – typischerweise wenige Rappen pro Beleg.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Kann ich Stash mit mehreren Benutzern verwenden?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Ja. Stash unterstützt mehrere Benutzerkonten auf demselben Gerät mit vollständiger Datentrennung – jeder Benutzer sieht nur seine eigenen Belege.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          Wie präzise ist die KI-Analyse?
+          <div class="faq-chevron"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+        <div class="faq-a">Sehr präzise. Claude Vision (von Anthropic) erkennt Händler, Gesamtbetrag, Datum, MwSt. und Kategorie aus Fotos, PDFs und E-Mails – auch bei unterschiedlichen Layouts und Sprachen.</div>
+      </div>
+
+    </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════
      FINAL CTA
-═══════════════════════════════════════════════════════════ -->
-<section class="cta-section">
-  <div class="cta-inner">
-    <h2 class="cta-title">Bereit, Ihre Belege<br>in Griff zu bekommen?</h2>
-    <p class="cta-sub">
-      Stash einrichten dauert weniger als 5 Minuten.
-      Lokal, kostenlos, ohne Cloud-Konto.
-    </p>
-    <a href="{{ url_for('login') }}" class="cta-btn">
+══════════════════════════════════════════════════════════ -->
+<section class="cta-final">
+  <div class="wrap cta-final-inner">
+    <h2 class="cta-final-title">Bereit für deine Belege<br>der Zukunft?</h2>
+    <p class="cta-final-sub">Stash einrichten dauert weniger als 5 Minuten. Lokal, kostenlos, ohne Cloud-Konto.</p>
+    <a href="{{ url_for('login') }}" class="btn-cta-white">
       <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-      Jetzt starten
+      Jetzt Stash testen
     </a>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════
      FOOTER
-═══════════════════════════════════════════════════════════ -->
-<footer class="lp-footer">
-  <div class="lp-footer-brand">
-    <div class="lp-logo-mark" style="width:28px;height:28px;border-radius:6px;">
-      {% include '_logo.html' %}
+══════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <div class="nav-logo-wrap" style="width:28px;height:28px;border-radius:7px;">{% include '_logo.html' %}</div>
+      <div>
+        <div class="footer-brand-name">Stash</div>
+        <div class="footer-copy">© 2025 Stash · Persönliche Belegverwaltung</div>
+      </div>
     </div>
-    <div>
-      <div class="lp-footer-brand-name">Stash</div>
-      <div class="lp-footer-copy">© 2025 Stash · Persönliche Belegverwaltung</div>
+
+    <div class="footer-links">
+      <a href="{{ url_for('login') }}" class="footer-link">Anmelden</a>
+      <a href="#faq" class="footer-link">FAQ</a>
+      <a href="#" class="footer-link">Impressum</a>
+      <a href="#" class="footer-link">Datenschutz</a>
     </div>
-  </div>
 
-  <div class="lp-footer-links">
-    <a href="{{ url_for('login') }}" class="lp-footer-link">Anmelden</a>
-    <a href="#" class="lp-footer-link">Datenschutz</a>
-  </div>
-
-  <div class="lp-footer-badge">
-    <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Swiss Made · Lokal · KI-gestützt
+    <div class="footer-badge">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Swiss Made · KI-gestützt · Lokal
+    </div>
   </div>
 </footer>
+
+<!-- ══════════════════════════════════════════════════════════
+     JS: Navbar scroll + FAQ accordion + Step highlight
+══════════════════════════════════════════════════════════ -->
+<script>
+// Navbar scroll shadow
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.querySelector('.faq-q').addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// How-it-works step highlight on scroll
+const steps = document.querySelectorAll('.how-step');
+if (steps.length) {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('active');
+    });
+  }, {threshold: 0.5});
+  steps.forEach(s => obs.observe(s));
+}
+</script>
 
 </body>
 </html>
